@@ -4,7 +4,6 @@ the Xiangqi environment.
 """
 import random
 """ PATHS """
-# TODO: Change it
 PATH_TO_SOUNDS = "sounds/"
 PATH_TO_BOARD = "images_junqi/board/"
 PATH_TO_BLACK = "images_junqi/black_pieces/"
@@ -13,7 +12,7 @@ PATH_TO_RED = "images_junqi/red_pieces/"
 """ PYGAME """
 # TODO: Change it
 WINDOW_WIDTH = 521
-WINDOW_HEIGHT = 800
+WINDOW_HEIGHT = 896
 FPS = 20
 COUNT = 10
 
@@ -102,17 +101,18 @@ KNOWN = 1
 
 # Piece Size
 # TODO: Change it
-PIECE_WIDTH = 58
-PIECE_HEIGHT = 58
-MINI_PIECE_WIDTH = 29
-MINI_PIECE_HEIGHT = 29
+PIECE_WIDTH = 64
+PIECE_HEIGHT = 32
+MINI_PIECE_WIDTH = 12
+MINI_PIECE_HEIGHT = 6
 
 """ BOARD """
 # Board Size
 # TODO: Change it
-BOARD_WIDTH = 521
-BOARD_HEIGHT = 577
-BOARD_Y_OFFSET = (WINDOW_HEIGHT/2 - BOARD_HEIGHT/2)
+BOARD_WIDTH = 512
+BOARD_HEIGHT = 896
+# BOARD_Y_OFFSET = (WINDOW_HEIGHT/2 - BOARD_HEIGHT/2)
+BOARD_Y_OFFSET = 0
 
 # Board Dimension
 BOARD_ROWS = 12
@@ -306,8 +306,11 @@ TOTAL_POS = BOARD_ROWS * BOARD_COLS
 
 """ Piece Coordinate Conversion """
 # TODO: Change it
-COOR_DELTA = 57
-COOR_OFFSET = 5
+COOR_X_DELTA = 107
+COOR_Y_DELTA = 65
+COOR_X_OFFSET = 10
+COOR_Y_OFFSET = 15
+COOR_RIVER_OFFSET = 40
 
 
 if __name__ == "__main__":

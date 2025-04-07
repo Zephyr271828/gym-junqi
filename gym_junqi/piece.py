@@ -12,7 +12,8 @@ from gym_junqi.constants import (
     # RIVER_LOW, RIVER_HIGH,                              # river bound
     MAX_REP,                                            # repetition bound
     BLACK, ALIVE, ALLY, ENEMY,                          # piece states
-    COOR_DELTA, COOR_OFFSET,                            # board coordinate
+    # board coordinate
+    COOR_X_DELTA, COOR_Y_DELTA, COOR_X_OFFSET, COOR_Y_OFFSET,
     PIECE_WIDTH, PIECE_HEIGHT,                          # piece sizes
     MINI_PIECE_WIDTH, MINI_PIECE_HEIGHT,                # mini piece sizes
     PATH_TO_BLACK, PATH_TO_RED,                         # file paths to pieces
@@ -63,8 +64,13 @@ class Piece:
         self.col = new_col
 
     def get_pygame_coor(self):
-        x = self.col*COOR_DELTA + COOR_OFFSET
-        y = self.row*COOR_DELTA + COOR_OFFSET + BOARD_Y_OFFSET
+        x = self.col*COOR_X_DELTA + COOR_X_OFFSET
+        y = self.row*COOR_Y_DELTA + COOR_Y_OFFSET + BOARD_Y_OFFSET
+
+        # 处理河的偏移
+        if self.row > 5:
+            y += 120
+
         return (x, y)
 
     def load_image(self, filename: str, piece_width, piece_height):

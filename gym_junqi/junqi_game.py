@@ -5,7 +5,6 @@ import pygame
 from gym_junqi.sound import Sound
 from gym_junqi.board import Board
 from gym_junqi.constants import (
-    COOR_DELTA, COOR_OFFSET,      # variables for coordinate conversion
     DEAD,                         # dead state for piece object
     WINDOW_WIDTH, WINDOW_HEIGHT,  # window size for pygame display
     FPS,                          # fps for pygame while loop
@@ -14,6 +13,8 @@ from gym_junqi.constants import (
     BOARD_Y_OFFSET,               # board y offset
     BOARD_WIDTH, BOARD_HEIGHT,    # board width, height
     GENERAL,                      # Piece IDs
+    # variables for coordinate conversion
+    COOR_X_DELTA, COOR_Y_DELTA, COOR_X_OFFSET, COOR_Y_OFFSET
 )
 
 
@@ -44,7 +45,7 @@ class JunQiGame:
         self.end_pos = None
         self.bgm_switch = True
         self.quit = False
-        self.compart_color = (153, 102, 75)
+        self.compart_color = (200, 200, 200)
 
     def on_init(self):
         """
@@ -114,8 +115,8 @@ class JunQiGame:
         cur_sel_basic_img.set_alpha(opacity)
 
         for _, (row, col) in self.cur_selected.legal_moves:
-            pygame_y = row*COOR_DELTA + COOR_OFFSET + BOARD_Y_OFFSET
-            pygame_x = col*COOR_DELTA + COOR_OFFSET
+            pygame_y = row * COOR_Y_DELTA + COOR_Y_OFFSET + BOARD_Y_OFFSET
+            pygame_x = col * COOR_X_DELTA + COOR_X_OFFSET
             self.screen.blit(cur_sel_basic_img, (pygame_x, pygame_y))
 
     def toggle_bgm(self):
@@ -328,13 +329,11 @@ class JunQiGame:
 
     def to_real_coor(self, clicked_coor):
         """
-        Convert clicked coordinate to real coordinate
+        Convert clicked coordinate to real coordinate using separate x and y offsets/deltas.
         """
-        clicked_real_x = (clicked_coor[0] - COOR_OFFSET) // COOR_DELTA
-
-        adj_y_offset = (COOR_OFFSET + BOARD_Y_OFFSET)
-        clicked_real_y = (clicked_coor[1] - adj_y_offset) // COOR_DELTA
-
+        clicked_real_x = (clicked_coor[0] - COOR_X_OFFSET) // COOR_X_DELTA
+        clicked_real_y = (
+            clicked_coor[1] - (COOR_Y_OFFSET + BOARD_Y_OFFSET)) // COOR_Y_DELTA
         return int(clicked_real_x), int(clicked_real_y)
 
     def find_target_piece(self, clicked_coor):
