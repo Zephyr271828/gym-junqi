@@ -93,11 +93,46 @@ class Piece:
                             self.piece_width, self.piece_height))
 
     def set_select_image(self):
-        # filename = self.name + "_S.png"
-        filename = self.name + ".png"  # 暂时先不做seletec状态的贴图
-        print(f"{self.name} 被选中，使用基本贴图")
-        self.select_image = (self.load_image(filename,
-                             self.piece_width, self.piece_height))
+        # 1. 先加载基础图片
+        filename = self.name + ".png"
+        base_image = self.load_image(
+            filename, self.piece_width, self.piece_height)
+
+        # 2. 创建一个副本来绘制选择框
+        selected_image = base_image.copy()
+
+        # 3. 获取图像尺寸
+        width, height = selected_image.get_size()
+
+        # 4. 定义角落框的颜色和尺寸
+        color = (190, 30, 20)
+        line_width = 8
+        corner_len = 10
+
+        # 5. 使用 pygame.draw 画出四个角落
+        # 左上
+        pygame.draw.line(selected_image, color, (0, 0),
+                         (corner_len, 0), line_width)
+        pygame.draw.line(selected_image, color, (0, 0),
+                         (0, corner_len), line_width)
+        # 右上
+        pygame.draw.line(selected_image, color,
+                         (width - corner_len, 0), (width, 0), line_width)
+        pygame.draw.line(selected_image, color, (width - 1, 0),
+                         (width - 1, corner_len), line_width)
+        # 左下
+        pygame.draw.line(selected_image, color, (0, height -
+                         corner_len), (0, height), line_width)
+        pygame.draw.line(selected_image, color, (0, height - 1),
+                         (corner_len, height - 1), line_width)
+        # 右下
+        pygame.draw.line(selected_image, color, (width - 1,
+                         height - corner_len), (width - 1, height), line_width)
+        pygame.draw.line(selected_image, color, (width - corner_len,
+                         height - 1), (width, height - 1), line_width)
+
+        print(f"{self.name} 被选中，添加四角选择框样式")
+        self.select_image = selected_image
 
     def set_mini_image(self):
         filename = self.name + ".png"

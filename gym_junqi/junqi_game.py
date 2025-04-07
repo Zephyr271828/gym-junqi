@@ -195,6 +195,7 @@ class JunQiGame:
                 # get clicked coordinate
                 clicked_x, clicked_y = pygame.mouse.get_pos()
                 clicked_coor = (clicked_x, clicked_y)
+                print(f"Clicked at: {clicked_coor}")
 
                 # select any ally pieces that is in the clicked range
                 self.find_target_piece(clicked_coor)
@@ -352,13 +353,13 @@ class JunQiGame:
 
             piece_x, piece_y = piece.get_pygame_coor()
 
-            x_min = piece_x - piece.piece_width/2 + 25
-            x_max = piece_x + piece.piece_width/2 + 25
+            x_min = piece_x - piece.piece_width/2 + COOR_X_OFFSET
+            x_max = piece_x + piece.piece_width/2 + COOR_X_OFFSET
 
             valid_x = x_min < clicked_x < x_max
 
-            y_min = piece_y - piece.piece_height/2 + 25
-            y_max = piece_y + piece.piece_height/2 + 25
+            y_min = piece_y - piece.piece_height/2 + COOR_Y_OFFSET
+            y_max = piece_y + piece.piece_height/2 + COOR_Y_OFFSET
 
             valid_y = y_min < clicked_y < y_max
 
@@ -366,6 +367,8 @@ class JunQiGame:
             if valid_x and valid_y:
                 self.cur_selected = piece
                 self.cur_selected_pid = piece_id
+                print(f"Selected piece: {self.cur_selected.name} (ID: {piece_id}) at "
+                      f"({piece.row}, {piece.col})")
                 break
 
     def init_timer(self):
