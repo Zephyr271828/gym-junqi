@@ -6,9 +6,9 @@ import random
 """ PATHS """
 # TODO: Change it
 PATH_TO_SOUNDS = "sounds/"
-PATH_TO_BOARD = "images/board/"
-PATH_TO_BLACK = "images/black_pieces/"
-PATH_TO_RED = "images/red_pieces/"
+PATH_TO_BOARD = "images_junqi/board/"
+PATH_TO_BLACK = "images_junqi/black_pieces/"
+PATH_TO_RED = "images_junqi/red_pieces/"
 
 """ PYGAME """
 # TODO: Change it
@@ -24,15 +24,15 @@ PIECE_POINTS = [
     1000.,                  # FlAG: Priceless for the flag
     17.,                    # FIELD_MARSHAL: 10.0 points
     12.,                    # GENERAL: 12.0 points
-    8.,8.,                  # ADVISOR: major_general points
-    5.,5.,                  # BRIGADIER: 5.0 points
-    4.,4.,                  # COLONEL: 4.0 points
-    3.,3.,3.,               # ENGINEER: 3.0 points
-    3.,3.,3.,               # LANDMINE: 3.0 points
-    2.,2.,                  # MAJOR: 2.0 points
-    0.8,0.8,0.8,            # CAPTAIN: 0.8 points
-    0.2,0.2,0,2,            # LIEUTENANT: 0.2 points
-    6.,6.,                  # BOMB: 6.0 points
+    8., 8.,                  # ADVISOR: major_general points
+    5., 5.,                  # BRIGADIER: 5.0 points
+    4., 4.,                  # COLONEL: 4.0 points
+    3., 3., 3.,               # ENGINEER: 3.0 points
+    3., 3., 3.,               # LANDMINE: 3.0 points
+    2., 2.,                  # MAJOR: 2.0 points
+    0.8, 0.8, 0.8,            # CAPTAIN: 0.8 points
+    0.2, 0.2, 0, 2,            # LIEUTENANT: 0.2 points
+    6., 6.,                  # BOMB: 6.0 points
     4.,                     # UNKNOWN: 4. points
 ]
 
@@ -119,17 +119,17 @@ BOARD_ROWS = 12
 BOARD_COLS = 5
 
 # HEADQUARTERS coordinates 大本营位置
-HEADQUARTERS_ALLY_2D = [(11, 1),(11, 3)]
-HEADQUARTERS_ENEMY_2D = [(0, 1),(0, 3)]
+HEADQUARTERS_ALLY_2D = [(11, 1), (11, 3)]
+HEADQUARTERS_ENEMY_2D = [(0, 1), (0, 3)]
 HEADQUARTERS_ALLY_1D = [56, 58]
 HEADQUARTERS_ENEMY_1D = [1, 3]
 
 # CAMPSITE coordinates 行营位置
-CAMP_ALLY = [(7, 1),(7, 3),(8, 2), (9, 1),(9, 3)]
-CAMP_ENEMY = [(2, 1),(2, 3),(3, 2), (4, 1),(4, 3)]
+CAMP_ALLY = [(7, 1), (7, 3), (8, 2), (9, 1), (9, 3)]
+CAMP_ENEMY = [(2, 1), (2, 3), (3, 2), (4, 1), (4, 3)]
 CAMP_ALLY_1D = [36, 38, 42, 46, 48]
 CAMP_ENEMY_1D = [11, 13, 17, 21, 23]
- 
+
 # 边的情况（60个节点互相之间的情况）
 BOARD_EDGES = [[0] * 60 for _ in range(60)]
 
@@ -177,8 +177,9 @@ for i in (7, 22, 32, 47):
     BOARD_EDGES[i][i+5] = 1
     BOARD_EDGES[i+5][i] = 1
 
-## 接下来定义railroad
-horizontal_railroad = list(range(5,9)) + list(range(25, 29)) + list(range(30, 34)) + list(range(50, 54))
+# 接下来定义railroad
+horizontal_railroad = list(
+    range(5, 9)) + list(range(25, 29)) + list(range(30, 34)) + list(range(50, 54))
 for i in horizontal_railroad:
     BOARD_EDGES[i][i+1] = 2
     BOARD_EDGES[i+1][i] = 2
@@ -187,6 +188,7 @@ vertical_railroad = list(range(5, 50, 5)) + list(range(9, 54, 5)) + [27]
 for i in vertical_railroad:
     BOARD_EDGES[i][i+5] = 2
     BOARD_EDGES[i+5][i] = 2
+
 
 def random_formation():
     """
@@ -198,7 +200,7 @@ def random_formation():
     forced_zero = {11, 13, 17, 21, 23, 36, 38, 42, 46, 48}
     for idx in forced_zero:
         formation[idx] = 0
-    
+
     # 上半棋盘只能是敌方棋子
     neg_positions = [i for i in range(0, 30) if i not in forced_zero]
     # 下半棋盘只能是我方棋子
@@ -319,14 +321,15 @@ if __name__ == "__main__":
     n_rows = 12
     n_cols = 5
     for i in range(60):
-        row = i // n_cols       
-        col = i % n_cols      
+        row = i // n_cols
+        col = i % n_cols
         x = col
         y = n_rows - 1 - row
         positions[i] = (x, y)
     for i, (x, y) in positions.items():
         ax.plot(x, y, 'ko', markersize=8)
-        ax.text(x, y, str(i), fontsize=8, ha='center', va='center', color='white')
+        ax.text(x, y, str(i), fontsize=8, ha='center',
+                va='center', color='white')
     for i in range(60):
         for j in range(i + 1, 60):
             edge_type = BOARD_EDGES[i][j]

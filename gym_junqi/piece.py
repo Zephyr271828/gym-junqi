@@ -6,10 +6,10 @@ import pygame
 
 from gym_junqi.utils import move_to_action_space, is_ally
 from gym_junqi.constants import (
-    ORTHOGONAL, DIAGONAL, ELEPHANT_MOVE, HORSE_MOVE,    # piece moves
+    ORTHOGONAL, DIAGONAL,  # ELEPHANT_MOVE, HORSE_MOVE,    # piece moves
     BOARD_ROWS, BOARD_COLS,                             # board specs
-    PALACE_ALLY_ROW, PALACE_ENEMY_ROW, PALACE_COL,      # palace bound
-    RIVER_LOW, RIVER_HIGH,                              # river bound
+    # PALACE_ALLY_ROW, PALACE_ENEMY_ROW, PALACE_COL,      # palace bound
+    # RIVER_LOW, RIVER_HIGH,                              # river bound
     MAX_REP,                                            # repetition bound
     BLACK, ALIVE, ALLY, ENEMY,                          # piece states
     COOR_DELTA, COOR_OFFSET,                            # board coordinate
@@ -87,7 +87,9 @@ class Piece:
                             self.piece_width, self.piece_height))
 
     def set_select_image(self):
-        filename = self.name + "_S.png"
+        # filename = self.name + "_S.png"
+        filename = self.name + ".png"  # 暂时先不做seletec状态的贴图
+        print(f"{self.name} 被选中，使用基本贴图")
         self.select_image = (self.load_image(filename,
                              self.piece_width, self.piece_height))
 
@@ -256,7 +258,7 @@ class Engineer(Piece):
 
     def __init__(self, color, row, col):
         super(Engineer, self).__init__(color, row, col)
-        self.name = "enegineer"
+        self.name = "engineer"
 
     def get_actions(self, piece_id, state, actions):
         """

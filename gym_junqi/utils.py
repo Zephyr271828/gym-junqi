@@ -1,4 +1,4 @@
-from gym_xiangqi.constants import TOTAL_POS
+from gym_junqi.constants import TOTAL_POS
 
 
 def move_to_action_space(piece_id, start, end):

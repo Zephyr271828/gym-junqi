@@ -10,7 +10,7 @@ from gym_junqi.utils import (
     is_ally
 )
 from gym_junqi.piece import (
-    General, Advisor, Elephant, Horse, Chariot, Cannon, Soldier
+    Flag, Field_Marshal, General, Major_General, Brigadier_General, Colonel, Engineer, Landmine, Major, Captain, Lieutenant, Bomb,
 )
 from gym_junqi.constants import (
     INITIAL_BOARD,
@@ -18,9 +18,7 @@ from gym_junqi.constants import (
     TOTAL_POS, PIECE_CNT,
     RED, BLACK, ALIVE, DEAD,
     ILLEGAL_MOVE, PIECE_POINTS, LOSE,
-    ALLY, ENEMY, EMPTY, GENERAL, SOLDIER_1, SOLDIER_5,
-    MAX_PERPETUAL_JIANG,
-    RIVER_LOW, RIVER_HIGH,
+    ALLY, ENEMY, EMPTY, GENERAL
 )
 
 
@@ -117,14 +115,32 @@ class JunQiEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
     id_to_class = [
-        None,
-        General,
-        Advisor, Advisor,
-        Elephant, Elephant,
-        Horse, Horse,
-        Chariot, Chariot,
-        Cannon, Cannon,
-        Soldier, Soldier, Soldier, Soldier, Soldier
+        None,               # 0（无用占位）
+        Flag,               # 1 军旗
+        Field_Marshal,      # 2 司令
+        General,            # 3 军长
+        Major_General,      # 4 师长
+        Major_General,      # 5 师长
+        Brigadier_General,  # 6 旅长
+        Brigadier_General,  # 7 旅长
+        Colonel,            # 8 团长
+        Colonel,            # 9 团长
+        Engineer,           # 10 工兵
+        Engineer,           # 11 工兵
+        Engineer,           # 12 工兵
+        Landmine,           # 13 地雷
+        Landmine,           # 14 地雷
+        Landmine,           # 15 地雷
+        Major,              # 16 营长
+        Major,              # 17 营长
+        Captain,            # 18 连长
+        Captain,            # 19 连长
+        Captain,            # 20 连长
+        Lieutenant,         # 21 排长
+        Lieutenant,         # 22 排长
+        Lieutenant,         # 23 排长
+        Bomb,               # 24 炸弹
+        Bomb                # 25 炸弹
     ]
 
     def __init__(self, ally_color=RED):
