@@ -14,3 +14,6 @@ dist/
 # Testing
 .coverage
 htmlcov
+
+# Mac OS
+.DS_Store

@@ -1,16 +1,16 @@
 import time
 
-from gym_xiangqi.agents import RandomAgent
-from gym_xiangqi.constants import (     # NOQA
+from gym_junqi.agents import RandomAgent
+from gym_junqi.constants import (     # NOQA
     RED, BLACK, PIECE_ID_TO_NAME, ALLY
 )
-from gym_xiangqi.utils import action_space_to_move
-from gym_xiangqi.envs import XiangQiEnv
+from gym_junqi.utils import action_space_to_move
+from gym_junqi.envs import JunQiEnv
 
 
 def main():
     # Pass in the color you want to play as (RED or BLACK)
-    env = XiangQiEnv(RED)
+    env = JunQiEnv(RED)
     env.render()
     agent = RandomAgent()
 
@@ -44,7 +44,7 @@ def main():
         print(f"Reward: {reward}")
         print("================")
 
-    print("Closing Xiangqi environment")
+    print("Closing Junqi environment")
     env.close()
 
 

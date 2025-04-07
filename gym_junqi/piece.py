@@ -4,8 +4,8 @@ import pkg_resources
 import numpy as np
 import pygame
 
-from gym_xiangqi.utils import move_to_action_space, is_ally
-from gym_xiangqi.constants import (
+from gym_junqi.utils import move_to_action_space, is_ally
+from gym_junqi.constants import (
     ORTHOGONAL, DIAGONAL, ELEPHANT_MOVE, HORSE_MOVE,    # piece moves
     BOARD_ROWS, BOARD_COLS,                             # board specs
     PALACE_ALLY_ROW, PALACE_ENEMY_ROW, PALACE_COL,      # palace bound

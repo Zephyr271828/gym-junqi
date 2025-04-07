@@ -3,13 +3,14 @@ import os
 import pkg_resources
 import pygame
 
-from gym_xiangqi.constants import BOARD_WIDTH, BOARD_HEIGHT, PATH_TO_BOARD
+from gym_junqi.constants import BOARD_WIDTH, BOARD_HEIGHT, PATH_TO_BOARD
 
 
 class Board:
     """
     A class for Xianqi Board
     """
+
     def __init__(self):
         self.boardWidth = BOARD_WIDTH
         self.boardHeight = BOARD_HEIGHT

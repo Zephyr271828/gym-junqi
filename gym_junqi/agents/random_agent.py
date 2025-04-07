@@ -1,7 +1,7 @@
 import numpy as np
 import random
 
-from gym_xiangqi.constants import ALLY
+from gym_junqi.constants import ALLY
 
 
 class RandomAgent:
@@ -11,6 +11,7 @@ class RandomAgent:
     The agent will simply choose a random move
     out of all the possible moves and return that.
     """
+
     def __init__(self):
         pass
 
