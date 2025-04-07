@@ -2,9 +2,9 @@ import time
 
 import pygame
 
-from gym_xiangqi.sound import Sound
-from gym_xiangqi.board import Board
-from gym_xiangqi.constants import (
+from gym_junqi.sound import Sound
+from gym_junqi.board import Board
+from gym_junqi.constants import (
     COOR_DELTA, COOR_OFFSET,      # variables for coordinate conversion
     DEAD,                         # dead state for piece object
     WINDOW_WIDTH, WINDOW_HEIGHT,  # window size for pygame display
@@ -17,7 +17,7 @@ from gym_xiangqi.constants import (
 )
 
 
-class XiangQiGame:
+class JunQiGame:
     """
     This class represents the Xiangqi game using PyGame.
     It is also a medium in which different components interact as a whole.

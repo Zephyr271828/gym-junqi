@@ -3,16 +3,16 @@ from gym import spaces
 from gym.utils import seeding
 import numpy as np
 
-from gym_xiangqi.xiangqi_game import XiangQiGame
-from gym_xiangqi.utils import (
+from gym_junqi.junqi_game import JunQiGame
+from gym_junqi.utils import (
     action_space_to_move,
     move_to_action_space,
     is_ally
 )
-from gym_xiangqi.piece import (
+from gym_junqi.piece import (
     General, Advisor, Elephant, Horse, Chariot, Cannon, Soldier
 )
-from gym_xiangqi.constants import (
+from gym_junqi.constants import (
     INITIAL_BOARD,
     BOARD_ROWS, BOARD_COLS,
     TOTAL_POS, PIECE_CNT,
@@ -24,7 +24,7 @@ from gym_xiangqi.constants import (
 )
 
 
-class XiangQiEnv(gym.Env):
+class JunQiEnv(gym.Env):
     """
     This is Xiangqi (Chinese chess) game implemented as reinforcement
     learning environment using OpenAI Gym framework. Xiangqi is played
@@ -170,7 +170,7 @@ class XiangQiEnv(gym.Env):
         self._enemy_jiang_history = None
 
         # Initialize PyGame module
-        self._game = XiangQiGame()
+        self._game = JunQiGame()
 
         # User movement information during user vs agent game mode
         self.user_move_info = None
