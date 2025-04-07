@@ -131,7 +131,7 @@ class Piece:
         pygame.draw.line(selected_image, color, (width - corner_len,
                          height - 1), (width, height - 1), line_width)
 
-        print(f"{self.name} 被选中，添加四角选择框样式")
+        # print(f"{self.name} 被选中，添加四角选择框样式")
         self.select_image = selected_image
 
     def set_mini_image(self):

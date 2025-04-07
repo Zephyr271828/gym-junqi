@@ -195,7 +195,7 @@ class JunQiGame:
                 # get clicked coordinate
                 clicked_x, clicked_y = pygame.mouse.get_pos()
                 clicked_coor = (clicked_x, clicked_y)
-                print(f"Clicked at: {clicked_coor}")
+                # print(f"Clicked at: {clicked_coor}")
 
                 # select any ally pieces that is in the clicked range
                 self.find_target_piece(clicked_coor)
