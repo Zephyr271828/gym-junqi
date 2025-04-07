@@ -159,27 +159,29 @@ def check_action(piece_id, orig_pos, cur_pos,
 
     return i + 1
 
+
 class Flag(Piece):
     """
     """
 
     def __init__(self, color, row, col):
         super(Flag, self).__init__(color, row, col)
-        self.name = "FLA"
+        self.name = "flag"
 
     def get_actions(self, piece_id, state, actions):
         """
         Finds legal moves for the Flag
         """
         pass
-    
+
+
 class Field_Marshal(Piece):
     """
     """
 
     def __init__(self, color, row, col):
         super(Field_Marshal, self).__init__(color, row, col)
-        self.name = "FMS"
+        self.name = "field_marshal"
 
     def get_actions(self, piece_id, state, actions):
         """
@@ -187,41 +189,44 @@ class Field_Marshal(Piece):
         """
         pass
 
+
 class General(Piece):
     """
     """
 
     def __init__(self, color, row, col):
         super(General, self).__init__(color, row, col)
-        self.name = "GEN"
+        self.name = "general"
 
     def get_actions(self, piece_id, state, actions):
         """
         Finds legal moves for the General
         """
         pass
-    
+
+
 class Major_General(Piece):
     """
     """
 
     def __init__(self, color, row, col):
         super(Major_General, self).__init__(color, row, col)
-        self.name = "MJG"
+        self.name = "major_general"
 
     def get_actions(self, piece_id, state, actions):
         """
         Finds legal moves for the Major General
         """
         pass
-    
-class Brigadier(Piece):
+
+
+class Brigadier_General(Piece):
     """
     """
 
     def __init__(self, color, row, col):
-        super(Brigadier, self).__init__(color, row, col)
-        self.name = "BRI"
+        super(Brigadier_General, self).__init__(color, row, col)
+        self.name = "brigadier_general"
 
     def get_actions(self, piece_id, state, actions):
         """
@@ -229,13 +234,14 @@ class Brigadier(Piece):
         """
         pass
 
+
 class Colonel(Piece):
     """
     """
 
     def __init__(self, color, row, col):
         super(Colonel, self).__init__(color, row, col)
-        self.name = "COL"
+        self.name = "colonel"
 
     def get_actions(self, piece_id, state, actions):
         """
@@ -243,83 +249,89 @@ class Colonel(Piece):
         """
         pass
 
+
 class Engineer(Piece):
     """
     """
 
     def __init__(self, color, row, col):
         super(Engineer, self).__init__(color, row, col)
-        self.name = "ENG"
+        self.name = "enegineer"
 
     def get_actions(self, piece_id, state, actions):
         """
         Finds legal moves for the Engineer
         """
         pass
-    
-class Land_Mine(Piece):
+
+
+class Landmine(Piece):
     """
     """
 
     def __init__(self, color, row, col):
-        super(Land_Mine, self).__init__(color, row, col)
-        self.name = "LDM"
+        super(Landmine, self).__init__(color, row, col)
+        self.name = "landmine"
 
     def get_actions(self, piece_id, state, actions):
         """
         Finds legal moves for the Land Mine
         """
         pass
-    
+
+
 class Major(Piece):
     """
     """
 
     def __init__(self, color, row, col):
         super(Major, self).__init__(color, row, col)
-        self.name = "MAJ"
+        self.name = "major"
 
     def get_actions(self, piece_id, state, actions):
         """
         Finds legal moves for the Major
         """
         pass
-    
+
+
 class Captain(Piece):
     """
     """
 
     def __init__(self, color, row, col):
         super(Captain, self).__init__(color, row, col)
-        self.name = "CAP"
+        self.name = "captain"
 
     def get_actions(self, piece_id, state, actions):
         """
         Finds legal moves for the Captain
         """
         pass
-    
+
+
 class Lieutenant(Piece):
     """
     """
 
     def __init__(self, color, row, col):
         super(Lieutenant, self).__init__(color, row, col)
-        self.name = "LIE"
+        self.name = "lieutenant"
 
     def get_actions(self, piece_id, state, actions):
         """
         Finds legal moves for the Lieutenant
         """
         pass
-    
+
+
 class Bomb(Piece):
     """
     """
 
     def __init__(self, color, row, col):
         super(Bomb, self).__init__(color, row, col)
-        self.name = "BOM"
+        self.name = "bomb"
 
     def get_actions(self, piece_id, state, actions):
         """
