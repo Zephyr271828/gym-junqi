@@ -8,6 +8,7 @@ import time
 
 def main():
     env = gym.make('gym_xiangqi:xiangqi-v0')
+    env.reset()
     env.render()
     agent = RandomAgent()
 
