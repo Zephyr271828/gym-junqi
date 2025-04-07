@@ -1,13 +1,13 @@
-from gym_xiangqi.agents import RandomAgent
-from gym_xiangqi.constants import ALLY, PIECE_ID_TO_NAME
-from gym_xiangqi.utils import action_space_to_move
+from gym_junqi.agents import RandomAgent
+from gym_junqi.constants import ALLY, PIECE_ID_TO_NAME
+from gym_junqi.utils import action_space_to_move
 
 import gym
 import time
 
 
 def main():
-    env = gym.make('gym_xiangqi:xiangqi-v0')
+    env = gym.make('gym_junqi:junqi-v0')
     env.reset()
     env.render()
     agent = RandomAgent()

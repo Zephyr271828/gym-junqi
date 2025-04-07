@@ -3,7 +3,7 @@ import os
 import pkg_resources
 import pygame
 
-from gym_xiangqi.constants import PATH_TO_SOUNDS
+from gym_junqi.constants import PATH_TO_SOUNDS
 
 
 class Sound:

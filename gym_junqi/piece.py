@@ -159,60 +159,36 @@ def check_action(piece_id, orig_pos, cur_pos,
 
     return i + 1
 
-
-def check_flying_general(state, side, piece_id, start, end):
+class Flag(Piece):
     """
-    Check if given input action results in flying general
-
-    Parameters:
-        state (np.array): 2D array representing current state
-        side (int): -1 or 1 representing enemy or ally side
-        piece_id (int): piece ID
-        start (tuple(int)): current coordinate of given piece
-        end (tuple(int)): destination coordinate of given piece
-    Return (bool):
-        indicates whether the action results in flying general or not
     """
 
-    # simulate input action without altering current game state
-    new_state = np.array(state)
-    new_state[start[0]][start[1]] = EMPTY
-    new_state[end[0]][end[1]] = piece_id * side
+    def __init__(self, color, row, col):
+        super(Flag, self).__init__(color, row, col)
+        self.name = "FLA"
 
-    enemy_gen_row = -1
-    enemy_gen_col = -1
-    ally_gen_row = -1
-    ally_gen_col = -1
+    def get_actions(self, piece_id, state, actions):
+        """
+        Finds legal moves for the Flag
+        """
+        pass
+    
+class Field_Marshal(Piece):
+    """
+    """
 
-    for r in range(PALACE_ENEMY_ROW[0], PALACE_ENEMY_ROW[1]+1):
-        for c in range(PALACE_COL[0], PALACE_COL[1]+1):
-            if new_state[r][c] == GENERAL * ENEMY:
-                enemy_gen_row = r
-                enemy_gen_col = c
+    def __init__(self, color, row, col):
+        super(Field_Marshal, self).__init__(color, row, col)
+        self.name = "FMS"
 
-    for r in range(PALACE_ALLY_ROW[0], PALACE_ALLY_ROW[1] + 1):
-        for c in range(PALACE_COL[0], PALACE_COL[1] + 1):
-            if new_state[r][c] == GENERAL * ALLY:
-                ally_gen_row = r
-                ally_gen_col = c
-
-    # check if they are in the same column
-    if enemy_gen_col != ally_gen_col:
-        return False
-
-    # check if anything is in between the two generals
-    for r in range(enemy_gen_row+1, ally_gen_row):
-        if new_state[r][ally_gen_col] != EMPTY:
-            return False
-    return True
-
+    def get_actions(self, piece_id, state, actions):
+        """
+        Finds legal moves for the Field Marshal
+        """
+        pass
 
 class General(Piece):
     """
-    This piece is equivalent to King. It is called "Jiang" or "Shuai"
-    meaning Governor (red) and General (black) respectively.
-    - Only one piece exists in each side
-    - Can only move 1 unit of space orthogonally within the special square area
     """
 
     def __init__(self, color, row, col):
@@ -223,266 +199,130 @@ class General(Piece):
         """
         Finds legal moves for the General
         """
-        if not is_ally(piece_id):
-            low = PALACE_ENEMY_ROW[0]
-            high = PALACE_ENEMY_ROW[1]
-        else:
-            low = PALACE_ALLY_ROW[0]
-            high = PALACE_ALLY_ROW[1]
-
-        for offset in ORTHOGONAL:
-            next_pos = (self.row + offset[0], self.col + offset[1])
-
-            # general must stay in the palace: row and column bound check
-            rb = low <= next_pos[0] <= high
-            cb = PALACE_COL[0] <= next_pos[1] <= PALACE_COL[1]
-            if rb and cb:
-                check_action(piece_id, (self.row, self.col), next_pos,
-                             1, offset, 0, state, actions)
-
-
-class Advisor(Piece):
+        pass
+    
+class Major_General(Piece):
     """
-    This piece is called "Shi" meaning advisor/scholar.
-    - 2 pieces exist in each side
-    - Can only move 1 unit of space diagonally within the special square area
     """
 
     def __init__(self, color, row, col):
-        super(Advisor, self).__init__(color, row, col)
-        self.name = "ADV"
+        super(Major_General, self).__init__(color, row, col)
+        self.name = "MJG"
 
     def get_actions(self, piece_id, state, actions):
         """
-        Finds legal moves for the Advisors
+        Finds legal moves for the Major General
         """
-        if not is_ally(piece_id):
-            low = PALACE_ENEMY_ROW[0]
-            high = PALACE_ENEMY_ROW[1]
-        else:
-            low = PALACE_ALLY_ROW[0]
-            high = PALACE_ALLY_ROW[1]
-
-        for offset in DIAGONAL:
-            next_pos = (self.row + offset[0], self.col + offset[1])
-
-            # advisor must stay in the palace: row and column bound check
-            rb = low <= next_pos[0] <= high
-            cb = PALACE_COL[0] <= next_pos[1] <= PALACE_COL[1]
-            if rb and cb:
-                check_action(piece_id, (self.row, self.col), next_pos,
-                             1, offset, 0, state, actions)
-
-
-class Elephant(Piece):
+        pass
+    
+class Brigadier(Piece):
     """
-    It is called "Shiang" meaning minister (red) and elephant (black)
-    This piece is similar to Bishop.
-    - 2 pieces exist in each side
-    - This piece cannot cross the river
-    - Moves 2 unit of space diagonally
     """
 
     def __init__(self, color, row, col):
-        super(Elephant, self).__init__(color, row, col)
-        self.name = "ELE"
+        super(Brigadier, self).__init__(color, row, col)
+        self.name = "BRI"
 
     def get_actions(self, piece_id, state, actions):
         """
-        Finds legal moves for the Elephants
+        Finds legal moves for the Brigadier
         """
-        if not is_ally(piece_id):
-            low = 0
-            high = RIVER_LOW
-        else:
-            low = RIVER_HIGH
-            high = BOARD_ROWS - 1
+        pass
 
-        for offset in ELEPHANT_MOVE:
-            next_pos = (self.row + offset[0], self.col + offset[1])
-
-            # bound check: must not cross the river
-            rb = low <= next_pos[0] <= high
-            cb = 0 <= next_pos[1] < BOARD_COLS
-            if not rb or not cb:
-                continue
-
-            # must be not blocked
-            block_r = self.row + offset[0] // 2
-            block_c = self.col + offset[1] // 2
-            if state[block_r][block_c] != 0:
-                continue
-
-            check_action(piece_id, (self.row, self.col), next_pos,
-                         1, offset, 0, state, actions)
-
-
-class Horse(Piece):
+class Colonel(Piece):
     """
-    This piece is almost identical to knight in Chess.
-    It is called "Ma" meaning horse.
-    - 2 Pieces in each side.
-    - Moves just like knights in chess. (The "L" shape move)
-    - Cannot jump over pieces unlike Knights in Chess
     """
 
     def __init__(self, color, row, col):
-        super(Horse, self).__init__(color, row, col)
-        self.name = "HRS"
+        super(Colonel, self).__init__(color, row, col)
+        self.name = "COL"
 
     def get_actions(self, piece_id, state, actions):
         """
-        Finds legal moves for the Horses
+        Finds legal moves for the Colonel
         """
-        # horse moves consist of 2 separate moves:
-        # 1. along the line up or down or left or right
-        # 2. diagonally left or right along the same direction
-        for first_move, second_move in HORSE_MOVE:
-            next_r = self.row + first_move[0]
-            next_c = self.col + first_move[1]
+        pass
 
-            # bound check
-            rb = 0 <= next_r < BOARD_ROWS
-            cb = 0 <= next_c < BOARD_COLS
-
-            if not rb or not cb:
-                continue
-
-            # check for any blocking piece
-            if state[next_r][next_c] != 0:
-                continue
-
-            next_pos = (next_r + second_move[0], next_c + second_move[1])
-
-            # no need to recurse on next moves; (0, 0) just a placeholder
-            check_action(piece_id, (self.row, self.col), next_pos,
-                         1, (0, 0), 0, state, actions)
-
-
-class Chariot(Piece):
+class Engineer(Piece):
     """
-    It is called "Chuh" meaning chariot
-    2 pieces in each side.
-    This piece is identical to Rook in Chess.
-    Moves just like a Rook in chess
-    - As many as you want horizontally or vertically.
     """
 
     def __init__(self, color, row, col):
-        super(Chariot, self).__init__(color, row, col)
-        self.name = "CHR"
+        super(Engineer, self).__init__(color, row, col)
+        self.name = "ENG"
 
     def get_actions(self, piece_id, state, actions):
         """
-        Find legal moves for the Chariots
+        Finds legal moves for the Engineer
         """
-        for offset in ORTHOGONAL:
-            next_pos = (self.row + offset[0], self.col + offset[1])
-            # No need to check for repetition; check as far as possible
-            check_action(piece_id, (self.row, self.col), next_pos,
-                         MAX_REP, offset, 0, state, actions)
-
-
-class Cannon(Piece):
+        pass
+    
+class Land_Mine(Piece):
     """
-    It is called "Pao" meaning cannon or catapult.
-    2 pieces in each side.
-    It moves similar to a Rook. The difference is, it has to jump over
-    ONE piece (enemy or foe) to capture enemy piece.
     """
 
     def __init__(self, color, row, col):
-        super(Cannon, self).__init__(color, row, col)
-        self.name = "CAN"
+        super(Land_Mine, self).__init__(color, row, col)
+        self.name = "LDM"
 
     def get_actions(self, piece_id, state, actions):
         """
-        Find legal moves for the Cannons
+        Finds legal moves for the Land Mine
         """
-        if not is_ally(piece_id):
-            sign = ENEMY
-        else:
-            sign = ALLY
-
-        for offset in ORTHOGONAL:
-            # moving positions
-            next_pos = (self.row + offset[0], self.col + offset[1])
-            reps = check_action(piece_id, (self.row, self.col), next_pos,
-                                MAX_REP, offset, 0, state, actions)
-
-            # mark the farthest position invalid if it is an enemy
-            last_r = self.row + offset[0] * reps
-            last_c = self.col + offset[1] * reps
-
-            if state[last_r][last_c] * sign < 0:
-                action_idx = move_to_action_space(piece_id * sign,
-                                                  (self.row, self.col),
-                                                  (last_r, last_c))
-                actions[action_idx] = 0
-
-            # attacking positions
-            next_r = self.row + offset[0] * (reps + 1)
-            next_c = self.col + offset[1] * (reps + 1)
-
-            while True:
-                rb = 0 <= next_r < BOARD_ROWS
-                cb = 0 <= next_c < BOARD_COLS
-
-                if not rb or not cb:
-                    break
-
-                if state[next_r][next_c] * sign > 0:
-                    break
-                elif state[next_r][next_c] * sign < 0:
-                    if check_flying_general(state, sign, piece_id,
-                                            (self.row, self.col),
-                                            (next_r, next_c)):
-                        break
-
-                    action_idx = move_to_action_space(
-                        piece_id * sign, (self.row, self.col), (next_r, next_c)
-                    )
-                    actions[action_idx] = 1
-                    break
-
-                next_r += offset[0]
-                next_c += offset[1]
-
-
-class Soldier(Piece):
+        pass
+    
+class Major(Piece):
     """
-    It is called "Ping" (red) and "Tsuh" (black) meaning a foot soldier.
-    5 pieces in each side.
-    This is equivalent to Pawn in chess.
-    Moves 1 unit of space forward
-    When it crosses the river, it gets options to move left or right as well.
     """
 
     def __init__(self, color, row, col):
-        super(Soldier, self).__init__(color, row, col)
-        self.name = "SOL"
+        super(Major, self).__init__(color, row, col)
+        self.name = "MAJ"
 
     def get_actions(self, piece_id, state, actions):
         """
-        Find legal moves for the soldiers
+        Finds legal moves for the Major
         """
-        # ORTHOGONAL contains 4 moves in clock-wise [UP, RIGHT, DOWN, LEFT]
-        if not is_ally(piece_id):   # enemy side is always at the top half
-            low = RIVER_HIGH
-            high = BOARD_ROWS - 1
-            moves = [2]             # therefore enemy soldiers move downwards
-        else:                       # ally side is always at the bottom half
-            low = 0
-            high = RIVER_LOW
-            moves = [0]             # therefore ally soldiers move upwards
+        pass
+    
+class Captain(Piece):
+    """
+    """
 
-        # low and high are set to be after-river row ranges
-        if low <= self.row <= high:     # After crossing the river,
-            moves.append(1)             # can move right
-            moves.append(3)             # can move left
+    def __init__(self, color, row, col):
+        super(Captain, self).__init__(color, row, col)
+        self.name = "CAP"
 
-        for i in moves:
-            offset = ORTHOGONAL[i]
-            next_pos = (self.row + offset[0], self.col + offset[1])
-            check_action(piece_id, (self.row, self.col), next_pos,
-                         1, offset, 0, state, actions)
+    def get_actions(self, piece_id, state, actions):
+        """
+        Finds legal moves for the Captain
+        """
+        pass
+    
+class Lieutenant(Piece):
+    """
+    """
+
+    def __init__(self, color, row, col):
+        super(Lieutenant, self).__init__(color, row, col)
+        self.name = "LIE"
+
+    def get_actions(self, piece_id, state, actions):
+        """
+        Finds legal moves for the Lieutenant
+        """
+        pass
+    
+class Bomb(Piece):
+    """
+    """
+
+    def __init__(self, color, row, col):
+        super(Bomb, self).__init__(color, row, col)
+        self.name = "BOM"
+
+    def get_actions(self, piece_id, state, actions):
+        """
+        Finds legal moves for the Bomb
+        """
+        pass
