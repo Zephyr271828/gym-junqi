@@ -70,7 +70,7 @@ class JunQiGame:
         self.board_background = self.init_board()
 
         # load game sound components
-        self.init_sound("piece_move.wav", "bgm.wav")
+        # self.init_sound("piece_move.wav", "bgm.wav")
 
     def set_pieces(self, ally_piece, enemy_piece):
         self.ally_piece = ally_piece
@@ -83,8 +83,9 @@ class JunQiGame:
 
         # load move_sound and set it to piece objects
         for i in range(1, PIECE_CNT+1):
-            self.ally_piece[i].move_sound = self.sound.piece_move
-            self.enemy_piece[i].move_sound = self.sound.piece_move
+            # self.ally_piece[i].move_sound = self.sound.piece_move
+            # self.enemy_piece[i].move_sound = self.sound.piece_move
+            pass
 
     def init_board(self):
         '''
@@ -111,11 +112,11 @@ class JunQiGame:
             return
 
         opacity = 128
-        cur_sel_basic_img = self.cur_selected.basic_image.copy()
+        cur_sel_basic_img = self.cur_selected.select_image.copy()
         cur_sel_basic_img.set_alpha(opacity)
 
         for _, (row, col) in self.cur_selected.legal_moves:
-            pygame_y = row * COOR_Y_DELTA + COOR_Y_OFFSET + BOARD_Y_OFFSET
+            pygame_y = row * COOR_Y_DELTA + COOR_Y_OFFSET + BOARD_Y_OFFSET + 120 * (row > 5)
             pygame_x = col * COOR_X_DELTA + COOR_X_OFFSET
             self.screen.blit(cur_sel_basic_img, (pygame_x, pygame_y))
 
@@ -369,6 +370,8 @@ class JunQiGame:
                 self.cur_selected_pid = piece_id
                 print(f"Selected piece: {self.cur_selected.name} (ID: {piece_id}) at "
                       f"({piece.row}, {piece.col})")
+                # NOTE testing
+                print(f"Possible next positions: {self.cur_selected.legal_moves}")
                 break
 
     def init_timer(self):

@@ -1,3 +1,5 @@
+from typing import Union
+
 """
 This file contains all the constants used throughout
 the Xiangqi environment.
@@ -118,77 +120,63 @@ BOARD_Y_OFFSET = 0
 BOARD_ROWS = 12
 BOARD_COLS = 5
 
+# 边的情况（60个节点互相之间的情况）
+BOARD_EDGES = [[0] * 60 for _ in range(60)]
+
+# NOTE convert 2D coordinates to 1D index
+def convert2idx(*args):
+    if isinstance(args[0], list) or isinstance(args[0], tuple):
+        (r, c) = args[0]
+    else:
+        r, c = args[0], args[1]
+    return r * BOARD_COLS + c   
+
+# NOTE add a bidirectional path between pos1 and pos2 and given value
+def add_road(pos1, pos2, value):
+    BOARD_EDGES[convert2idx(pos1)][convert2idx(pos2)] = value
+    BOARD_EDGES[convert2idx(pos2)][convert2idx(pos1)] = value
+
 # HEADQUARTERS coordinates 大本营位置
 HEADQUARTERS_ALLY_2D = [(11, 1), (11, 3)]
 HEADQUARTERS_ENEMY_2D = [(0, 1), (0, 3)]
-HEADQUARTERS_ALLY_1D = [56, 58]
-HEADQUARTERS_ENEMY_1D = [1, 3]
+HEADQUARTERS_ALLY_1D = [convert2idx(each) for each in HEADQUARTERS_ALLY_2D]
+HEADQUARTERS_ENEMY_1D = [convert2idx(each) for each in HEADQUARTERS_ENEMY_2D]
 
 # CAMPSITE coordinates 行营位置
 CAMP_ALLY = [(7, 1), (7, 3), (8, 2), (9, 1), (9, 3)]
 CAMP_ENEMY = [(2, 1), (2, 3), (3, 2), (4, 1), (4, 3)]
-CAMP_ALLY_1D = [36, 38, 42, 46, 48]
-CAMP_ENEMY_1D = [11, 13, 17, 21, 23]
-
-# 边的情况（60个节点互相之间的情况）
-BOARD_EDGES = [[0] * 60 for _ in range(60)]
+CAMP_ALLY_1D = [convert2idx(each) for each in CAMP_ALLY]
+CAMP_ENEMY_1D = [convert2idx(each) for each in CAMP_ENEMY]
 
 # 0: no edge, 1: road, 2: railroad
 # 以下定义所有的road
-for i in range(4):
-    BOARD_EDGES[i][i+1] = 1
-    BOARD_EDGES[i+1][i] = 1
-    BOARD_EDGES[i][i+5] = 1
-    BOARD_EDGES[i+5][i] = 1
-BOARD_EDGES[4][9] = 1
-BOARD_EDGES[9][4] = 1
-
-for i in range(55, 59):
-    BOARD_EDGES[i][i+1] = 1
-    BOARD_EDGES[i+1][i] = 1
-    BOARD_EDGES[i][i-5] = 1
-    BOARD_EDGES[i-5][i] = 1
-BOARD_EDGES[54][59] = 1
-BOARD_EDGES[59][54] = 1
-
-for i in CAMP_ALLY_1D + CAMP_ENEMY_1D:
-    BOARD_EDGES[i][i-1] = 1
-    BOARD_EDGES[i-1][i] = 1
-    BOARD_EDGES[i][i+1] = 1
-    BOARD_EDGES[i+1][i] = 1
-    BOARD_EDGES[i][i-5] = 1
-    BOARD_EDGES[i-5][i] = 1
-    BOARD_EDGES[i][i+5] = 1
-    BOARD_EDGES[i+5][i] = 1
-    BOARD_EDGES[i][i-6] = 1
-    BOARD_EDGES[i-6][i] = 1
-    BOARD_EDGES[i][i+6] = 1
-    BOARD_EDGES[i+6][i] = 1
-    BOARD_EDGES[i][i-4] = 1
-    BOARD_EDGES[i-4][i] = 1
-    BOARD_EDGES[i][i+4] = 1
-    BOARD_EDGES[i+4][i] = 1
-
-for i in (15, 18, 40, 43):
-    BOARD_EDGES[i][i+1] = 1
-    BOARD_EDGES[i+1][i] = 1
-
-for i in (7, 22, 32, 47):
-    BOARD_EDGES[i][i+5] = 1
-    BOARD_EDGES[i+5][i] = 1
-
-# 接下来定义railroad
-horizontal_railroad = list(
-    range(5, 9)) + list(range(25, 29)) + list(range(30, 34)) + list(range(50, 54))
-for i in horizontal_railroad:
-    BOARD_EDGES[i][i+1] = 2
-    BOARD_EDGES[i+1][i] = 2
-
-vertical_railroad = list(range(5, 50, 5)) + list(range(9, 54, 5)) + [27]
-for i in vertical_railroad:
-    BOARD_EDGES[i][i+5] = 2
-    BOARD_EDGES[i+5][i] = 2
-
+# NOTE add horizontal and vertical roads
+for r in range(BOARD_ROWS):
+    for c in range(BOARD_COLS):
+        if c < BOARD_COLS - 1:
+            add_road((r, c), (r, c+1), 1)
+        if r < BOARD_ROWS - 1:
+            add_road((r, c), (r+1, c), 1)
+add_road((5, 1), (6, 1), 0)
+add_road((5, 3), (6, 3), 0)
+# NOTE add diagonal roads
+for r in [2, 4, 7, 9]:
+    for c in [1, 3]:
+        add_road((r, c), (r+1, c+1), 1)
+        add_road((r, c), (r+1, c-1), 1)
+        add_road((r, c), (r-1, c+1), 1)
+        add_road((r, c), (r-1, c-1), 1)
+        
+# NOTE add rail roads
+# NOTE horizontal
+for r in [1, 5, 6, 10]:
+    for c in range(BOARD_COLS - 1):
+        add_road((r, c), (r, c+1), 2)
+# NOTE vertical
+for r in range(1, BOARD_ROWS - 2):
+    for c in [0, 4]:
+        add_road((r, c), (r+1, c), 2)
+add_road((5, 2), (6, 2), 2)
 
 def random_formation():
     """
@@ -197,7 +185,9 @@ def random_formation():
     formation = [None] * 60
 
     # 固定位置的行营，不能放任何东西
-    forced_zero = {11, 13, 17, 21, 23, 36, 38, 42, 46, 48}
+    forced_zero = set([convert2idx(r, c) for r in [2, 4, 7, 9] for c in [1, 3]])
+    forced_zero.add(convert2idx(3, 2))
+    forced_zero.add(convert2idx(8, 2))
     for idx in forced_zero:
         formation[idx] = 0
 

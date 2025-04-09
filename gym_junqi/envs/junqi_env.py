@@ -287,14 +287,14 @@ class JunQiEnv(gym.Env):
         # Reward based on removed piece
         reward += PIECE_POINTS[abs(rm_piece_id)]
 
-        # Check if the removed piece is a soldier that has crossed the river
-        if SOLDIER_1 <= abs(rm_piece_id) <= SOLDIER_5:
-            if is_ally(rm_piece_id):
-                if self._ally_piece[rm_piece_id].row <= RIVER_LOW:
-                    reward += 1
-            else:
-                if self._enemy_piece[rm_piece_id].row >= RIVER_HIGH:
-                    reward += 1
+        # # Check if the removed piece is a soldier that has crossed the river
+        # if SOLDIER_1 <= abs(rm_piece_id) <= SOLDIER_5:
+        #     if is_ally(rm_piece_id):
+        #         if self._ally_piece[rm_piece_id].row <= RIVER_LOW:
+        #             reward += 1
+        #     else:
+        #         if self._enemy_piece[rm_piece_id].row >= RIVER_HIGH:
+        #             reward += 1
 
         # End game if the General on either side has been attacked
         if abs(rm_piece_id) == GENERAL:
@@ -312,9 +312,9 @@ class JunQiEnv(gym.Env):
                     jiang_history[jiang_action] = 0
                 jiang_history[jiang_action] += 1
 
-                if jiang_history[jiang_action] == MAX_PERPETUAL_JIANG:
-                    self._done = True
-                    return np.array(self._state), LOSE, self._done, {}
+                # if jiang_history[jiang_action] == MAX_PERPETUAL_JIANG:
+                #     self._done = True
+                #     return np.array(self._state), LOSE, self._done, {}
         else:       # Reset history if jiang spree has stopped
             if self._turn == ALLY:
                 self._ally_jiang_history = {}

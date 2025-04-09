@@ -18,7 +18,9 @@ from gym_junqi.constants import (
     MINI_PIECE_WIDTH, MINI_PIECE_HEIGHT,                # mini piece sizes
     PATH_TO_BLACK, PATH_TO_RED,                         # file paths to pieces
     EMPTY, GENERAL,                                     # piece IDs
-    BOARD_Y_OFFSET                                      # board y offset
+    BOARD_Y_OFFSET,                                     # board y offset
+    BOARD_EDGES,                                        # type of the edges
+    convert2idx,                                        # function that convertes 2D coordinates to 1D idx
 )
 
 
@@ -183,14 +185,32 @@ def check_action(piece_id, orig_pos, cur_pos,
 
         if not rb or not cb:
             return i
+    
+        # NOTE check if piece is on trail
+        if i == 0:
+            on_trail = (BOARD_EDGES[convert2idx(orig_pos)][convert2idx(cur_pos)] == 2)
 
-        # if ally piece is located, can't go further
+        # NOTE if ally piece is located, can't go further
         if state[r][c] * sign > 0:
             break
-
-        if check_flying_general(state, sign, piece_id, orig_pos, (r, c)):
-            return 0
-
+        elif state[r][c] * sign < 0:
+        # NOTE need to check the level of pieces here
+            i += 1
+            break
+            
+        start_idx = convert2idx(r-offset[0], c-offset[1])
+        end_idx = convert2idx(r, c)
+        if BOARD_EDGES[start_idx][end_idx] == 0:
+            return i
+        elif on_trail:
+            if BOARD_EDGES[start_idx][end_idx] < 2:
+                break
+            else:
+                repeat += 1
+        
+        # NOTE if in base camp
+        # TODO 
+        
         action_idx = move_to_action_space(piece_id, orig_pos, (r, c))
         actions[action_idx] = 1
 
@@ -215,6 +235,7 @@ class Flag(Piece):
         """
         Finds legal moves for the Flag
         """
+        # NOTE flags cannot move
         pass
 
 
@@ -230,7 +251,14 @@ class Field_Marshal(Piece):
         """
         Finds legal moves for the Field Marshal
         """
-        pass
+        for offset in ORTHOGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])            
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
+        for offset in DIAGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
 
 
 class General(Piece):
@@ -245,7 +273,14 @@ class General(Piece):
         """
         Finds legal moves for the General
         """
-        pass
+        for offset in ORTHOGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])            
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
+        for offset in DIAGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
 
 
 class Major_General(Piece):
@@ -260,7 +295,14 @@ class Major_General(Piece):
         """
         Finds legal moves for the Major General
         """
-        pass
+        for offset in ORTHOGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])            
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
+        for offset in DIAGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
 
 
 class Brigadier_General(Piece):
@@ -275,7 +317,14 @@ class Brigadier_General(Piece):
         """
         Finds legal moves for the Brigadier
         """
-        pass
+        for offset in ORTHOGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])            
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
+        for offset in DIAGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
 
 
 class Colonel(Piece):
@@ -290,7 +339,14 @@ class Colonel(Piece):
         """
         Finds legal moves for the Colonel
         """
-        pass
+        for offset in ORTHOGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])            
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
+        for offset in DIAGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
 
 
 class Engineer(Piece):
@@ -305,7 +361,14 @@ class Engineer(Piece):
         """
         Finds legal moves for the Engineer
         """
-        pass
+        for offset in ORTHOGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])            
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
+        for offset in DIAGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
 
 
 class Landmine(Piece):
@@ -320,6 +383,7 @@ class Landmine(Piece):
         """
         Finds legal moves for the Land Mine
         """
+        # NOTE landmines cannot move
         pass
 
 
@@ -335,8 +399,19 @@ class Major(Piece):
         """
         Finds legal moves for the Major
         """
-        pass
-
+        # for offset in ORTHOGONAL:
+        #     next_pos = (self.row + offset[0], self.col + offset[1])
+        #     # No need to check for repetition; check as far as possible
+        #     check_action(piece_id, (self.row, self.col), next_pos,
+        #                  MAX_REP, offset, 0, state, actions)
+        for offset in ORTHOGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])            
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
+        for offset in DIAGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
 
 class Captain(Piece):
     """
@@ -350,7 +425,19 @@ class Captain(Piece):
         """
         Finds legal moves for the Captain
         """
-        pass
+        # for offset in ORTHOGONAL:
+        #     next_pos = (self.row + offset[0], self.col + offset[1])
+        #     # No need to check for repetition; check as far as possible
+        #     check_action(piece_id, (self.row, self.col), next_pos,
+        #                  MAX_REP, offset, 0, state, actions)
+        for offset in ORTHOGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])            
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
+        for offset in DIAGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
 
 
 class Lieutenant(Piece):
@@ -365,7 +452,19 @@ class Lieutenant(Piece):
         """
         Finds legal moves for the Lieutenant
         """
-        pass
+        # for offset in ORTHOGONAL:
+        #     next_pos = (self.row + offset[0], self.col + offset[1])
+        #     # No need to check for repetition; check as far as possible
+        #     check_action(piece_id, (self.row, self.col), next_pos,
+        #                  MAX_REP, offset, 0, state, actions)
+        for offset in ORTHOGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])            
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
+        for offset in DIAGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
 
 
 class Bomb(Piece):
@@ -380,4 +479,13 @@ class Bomb(Piece):
         """
         Finds legal moves for the Bomb
         """
-        pass
+        
+        for offset in ORTHOGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])            
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
+        for offset in DIAGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])
+            check_action(piece_id, (self.row, self.col), next_pos,
+                         1, offset, 0, state, actions)
+        

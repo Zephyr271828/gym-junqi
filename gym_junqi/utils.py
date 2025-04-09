@@ -1,4 +1,4 @@
-from gym_junqi.constants import TOTAL_POS
+from gym_junqi.constants import TOTAL_POS, BOARD_COLS
 
 
 def move_to_action_space(piece_id, start, end):
@@ -15,8 +15,8 @@ def move_to_action_space(piece_id, start, end):
         Index within the self.possible_actions
     """
     piece_id_val = (piece_id - 1) * pow(TOTAL_POS, 2)
-    start_val = (start[0] * 9 + start[1]) * TOTAL_POS
-    end_val = end[0] * 9 + end[1]
+    start_val = (start[0] * BOARD_COLS + start[1]) * TOTAL_POS
+    end_val = end[0] * BOARD_COLS + end[1]
     return piece_id_val + start_val + end_val
 
 
@@ -35,8 +35,8 @@ def action_space_to_move(action):
     start_val, end_val = divmod(r, TOTAL_POS)
     start = [0, 0]
     end = [0, 0]
-    start[0], start[1] = divmod(start_val, 9)
-    end[0], end[1] = divmod(end_val, 9)
+    start[0], start[1] = divmod(start_val, BOARD_COLS)
+    end[0], end[1] = divmod(end_val, BOARD_COLS)
     return piece_id + 1, start, end
 
 
