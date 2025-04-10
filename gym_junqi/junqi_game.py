@@ -117,7 +117,8 @@ class JunQiGame:
         cur_sel_basic_img.set_alpha(opacity)
 
         for _, (row, col) in self.cur_selected.legal_moves:
-            pygame_y = row * COOR_Y_DELTA + COOR_Y_OFFSET + BOARD_Y_OFFSET + 120 * (row > 5)
+            pygame_y = row * COOR_Y_DELTA + COOR_Y_OFFSET + \
+                BOARD_Y_OFFSET + 120 * (row > 5)
             pygame_x = col * COOR_X_DELTA + COOR_X_OFFSET
             self.screen.blit(cur_sel_basic_img, (pygame_x, pygame_y))
 
@@ -331,12 +332,15 @@ class JunQiGame:
             pieces[i].set_mini_image()
 
     def to_real_coor(self, clicked_coor):
-        """
-        Convert clicked coordinate to real coordinate using separate x and y offsets/deltas.
-        """
         clicked_real_x = (clicked_coor[0] - COOR_X_OFFSET) // COOR_X_DELTA
-        clicked_real_y = (
-            clicked_coor[1] - (COOR_Y_OFFSET + BOARD_Y_OFFSET)) // COOR_Y_DELTA
+        clicked_y_offset = BOARD_Y_OFFSET + COOR_Y_OFFSET
+        clicked_real_y = (clicked_coor[1] - clicked_y_offset) // COOR_Y_DELTA
+
+        # 但要考虑 row > 5 时的额外 +120 偏移（这是关键）
+        if clicked_coor[1] >= (6 * COOR_Y_DELTA + clicked_y_offset):
+            clicked_real_y = (clicked_coor[1] -
+                              clicked_y_offset - 120) // COOR_Y_DELTA
+
         return int(clicked_real_x), int(clicked_real_y)
 
     def find_target_piece(self, clicked_coor):
@@ -372,7 +376,8 @@ class JunQiGame:
                 print(f"Selected piece: {self.cur_selected.name} (ID: {piece_id}) at "
                       f"({piece.row}, {piece.col})")
                 # NOTE testing
-                print(f"Possible next positions: {self.cur_selected.legal_moves}")
+                print(
+                    f"Possible next positions: {self.cur_selected.legal_moves}")
                 break
 
     def init_timer(self):
