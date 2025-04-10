@@ -130,6 +130,8 @@ def convert2idx(*args):
         (r, c) = args[0]
     else:
         r, c = args[0], args[1]
+    if r < 0 or r >= BOARD_ROWS or c < 0 or c >= BOARD_COLS:
+        return -1
     return r * BOARD_COLS + c   
 
 # NOTE add a bidirectional path between pos1 and pos2 and given value

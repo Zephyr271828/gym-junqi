@@ -185,10 +185,6 @@ def check_action(piece_id, orig_pos, cur_pos,
 
         if not rb or not cb:
             return i
-    
-        # NOTE check if piece is on trail
-        if i == 0:
-            on_trail = (BOARD_EDGES[convert2idx(orig_pos)][convert2idx(cur_pos)] == 2)
 
         # NOTE if ally piece is located, can't go further
         if state[r][c] * sign > 0:
@@ -196,13 +192,9 @@ def check_action(piece_id, orig_pos, cur_pos,
             
         start_idx = convert2idx(r-offset[0], c-offset[1])
         end_idx = convert2idx(r, c)
-        if BOARD_EDGES[start_idx][end_idx] == 0:
+        if BOARD_EDGES[start_idx][end_idx] == 0 \
+        or (BOARD_EDGES[start_idx][end_idx] == 1 and i >= 1):
             return i
-        elif on_trail:
-            if BOARD_EDGES[start_idx][end_idx] < 2:
-                break
-            else:
-                repeat += 1
         
         # TODO need to check if in the base camp here
         # if ...
@@ -215,6 +207,9 @@ def check_action(piece_id, orig_pos, cur_pos,
             pass
 
         if state[r][c] != 0:
+            break
+        
+        if BOARD_EDGES[start_idx][end_idx] == 1:
             break
 
         r += offset[0]
@@ -254,7 +249,7 @@ class Field_Marshal(Piece):
         for offset in ORTHOGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])            
             check_action(piece_id, (self.row, self.col), next_pos,
-                         1, offset, 0, state, actions)
+                         MAX_REP, offset, 0, state, actions)
         for offset in DIAGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])
             check_action(piece_id, (self.row, self.col), next_pos,
@@ -276,7 +271,7 @@ class General(Piece):
         for offset in ORTHOGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])            
             check_action(piece_id, (self.row, self.col), next_pos,
-                         1, offset, 0, state, actions)
+                         MAX_REP, offset, 0, state, actions)
         for offset in DIAGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])
             check_action(piece_id, (self.row, self.col), next_pos,
@@ -298,7 +293,7 @@ class Major_General(Piece):
         for offset in ORTHOGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])            
             check_action(piece_id, (self.row, self.col), next_pos,
-                         1, offset, 0, state, actions)
+                         MAX_REP, offset, 0, state, actions)
         for offset in DIAGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])
             check_action(piece_id, (self.row, self.col), next_pos,
@@ -320,7 +315,7 @@ class Brigadier_General(Piece):
         for offset in ORTHOGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])            
             check_action(piece_id, (self.row, self.col), next_pos,
-                         1, offset, 0, state, actions)
+                         MAX_REP, offset, 0, state, actions)
         for offset in DIAGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])
             check_action(piece_id, (self.row, self.col), next_pos,
@@ -342,7 +337,7 @@ class Colonel(Piece):
         for offset in ORTHOGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])            
             check_action(piece_id, (self.row, self.col), next_pos,
-                         1, offset, 0, state, actions)
+                         MAX_REP, offset, 0, state, actions)
         for offset in DIAGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])
             check_action(piece_id, (self.row, self.col), next_pos,
@@ -361,10 +356,33 @@ class Engineer(Piece):
         """
         Finds legal moves for the Engineer
         """
-        for offset in ORTHOGONAL:
-            next_pos = (self.row + offset[0], self.col + offset[1])            
-            check_action(piece_id, (self.row, self.col), next_pos,
-                         1, offset, 0, state, actions)
+        # NOTE for orthogonal case, do BFS
+        visited = [0 for _ in range(BOARD_ROWS * BOARD_COLS)]
+        orig_pos = (self.row, self.col)
+        vertices2visit = [orig_pos]
+        on_trail = False
+        while vertices2visit != []:
+            u = vertices2visit.pop(0)
+            u_idx = convert2idx(u)
+            if visited[u_idx] == 1:
+                continue
+            visited[u_idx] = 1
+            for offset in ORTHOGONAL:
+                v = (u[0] + offset[0], u[1] + offset[1])   
+                v_idx = convert2idx(v)
+                if v_idx == -1:
+                    continue
+                # NOTE check if the piece goes off trail
+                if on_trail and BOARD_EDGES[u_idx][v_idx] < 2:
+                    continue
+                i = check_action(piece_id, orig_pos, v,
+                    1, offset, 0, state, actions)
+                # NOTE if next position on trail, append it
+                if i > 0 and BOARD_EDGES[u_idx][v_idx] == 2 and state[v[0]][v[1]] == 0:
+                    vertices2visit.append(v)
+            if vertices2visit != []:
+                on_trail = True
+
         for offset in DIAGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])
             check_action(piece_id, (self.row, self.col), next_pos,
@@ -407,7 +425,7 @@ class Major(Piece):
         for offset in ORTHOGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])            
             check_action(piece_id, (self.row, self.col), next_pos,
-                         1, offset, 0, state, actions)
+                         MAX_REP, offset, 0, state, actions)
         for offset in DIAGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])
             check_action(piece_id, (self.row, self.col), next_pos,
@@ -433,7 +451,7 @@ class Captain(Piece):
         for offset in ORTHOGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])            
             check_action(piece_id, (self.row, self.col), next_pos,
-                         1, offset, 0, state, actions)
+                         MAX_REP, offset, 0, state, actions)
         for offset in DIAGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])
             check_action(piece_id, (self.row, self.col), next_pos,
@@ -460,7 +478,7 @@ class Lieutenant(Piece):
         for offset in ORTHOGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])            
             check_action(piece_id, (self.row, self.col), next_pos,
-                         1, offset, 0, state, actions)
+                         MAX_REP, offset, 0, state, actions)
         for offset in DIAGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])
             check_action(piece_id, (self.row, self.col), next_pos,
@@ -483,7 +501,7 @@ class Bomb(Piece):
         for offset in ORTHOGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])            
             check_action(piece_id, (self.row, self.col), next_pos,
-                         1, offset, 0, state, actions)
+                         MAX_REP, offset, 0, state, actions)
         for offset in DIAGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])
             check_action(piece_id, (self.row, self.col), next_pos,
