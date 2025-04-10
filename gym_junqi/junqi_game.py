@@ -16,6 +16,7 @@ from gym_junqi.constants import (
     # variables for coordinate conversion
     COOR_X_DELTA, COOR_Y_DELTA, COOR_X_OFFSET, COOR_Y_OFFSET
 )
+from gym_junqi.custom_board import custom_board
 
 
 class JunQiGame:

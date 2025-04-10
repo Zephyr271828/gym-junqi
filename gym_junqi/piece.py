@@ -193,10 +193,6 @@ def check_action(piece_id, orig_pos, cur_pos,
         # NOTE if ally piece is located, can't go further
         if state[r][c] * sign > 0:
             break
-        elif state[r][c] * sign < 0:
-        # NOTE need to check the level of pieces here
-            i += 1
-            break
             
         start_idx = convert2idx(r-offset[0], c-offset[1])
         end_idx = convert2idx(r, c)
@@ -208,11 +204,15 @@ def check_action(piece_id, orig_pos, cur_pos,
             else:
                 repeat += 1
         
-        # NOTE if in base camp
-        # TODO 
+        # TODO need to check if in the base camp here
+        # if ...
         
         action_idx = move_to_action_space(piece_id, orig_pos, (r, c))
         actions[action_idx] = 1
+
+        # NOTE need to check the level of pieces here
+        if state[r][c] * sign < 0:
+            pass
 
         if state[r][c] != 0:
             break

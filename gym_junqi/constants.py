@@ -1,4 +1,5 @@
 from typing import Union
+from gym_junqi.custom_board import custom_board
 
 """
 This file contains all the constants used throughout
@@ -284,6 +285,8 @@ def random_formation():
     for i in range(12):
         row = formation[i * 5:(i + 1) * 5]
         formation_2d.append(row)
+    # NOTE custom board state for test
+    # formation_2d = custom_board
     return formation_2d
 
 
