@@ -1,5 +1,5 @@
 import time
-import sys; sys.path.append('/Users/zephyr/Desktop/cs-courses/25S_RL/gym-junqi')
+import sys; sys.path.append('/Users/jenniferzhang/Downloads/gym-junqi/')
 from gym_junqi.agents import RandomAgent
 from gym_junqi.constants import (     # NOQA
     RED, BLACK, PIECE_ID_TO_NAME, ALLY

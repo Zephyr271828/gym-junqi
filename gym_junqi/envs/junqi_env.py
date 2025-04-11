@@ -7,7 +7,8 @@ from gym_junqi.junqi_game import JunQiGame
 from gym_junqi.utils import (
     action_space_to_move,
     move_to_action_space,
-    is_ally
+    is_ally,
+    
 )
 from gym_junqi.piece import (
     Flag, Field_Marshal, General, Major_General, Brigadier_General, Colonel, Engineer, Landmine, Major, Captain, Lieutenant, Bomb,
@@ -142,6 +143,51 @@ class JunQiEnv(gym.Env):
         Bomb,               # 24 炸弹
         Bomb                # 25 炸弹
     ]
+    
+    PIECE_TYPE = {
+    1: "flag",
+    2: "field_marshal",
+    3: "general",
+    4: "major_general",
+    5: "major_general",
+    6: "brigadier_general",
+    7: "brigadier_general",
+    8: "colonel",
+    9: "colonel",
+    10: "engineer",
+    11: "engineer",
+    12: "engineer",
+    13: "landmine",
+    14: "landmine",
+    15: "landmine",
+    16: "major",
+    17: "major",
+    18: "captain",
+    19: "captain",
+    20: "captain",
+    21: "lieutenant",
+    22: "lieutenant",
+    23: "lieutenant",
+    24: "bomb",
+    25: "bomb",
+}
+# piece type → strength level
+    PIECE_RANK = {
+        'flag': 0,
+        'landmine': 1,
+        'engineer': 2,
+        'lieutenant': 3,
+        'captain': 4,
+        'major': 5,
+        'colonel': 6,
+        'brigadier_general': 7,
+        'major_general': 8,
+        'general': 9,
+        'field_marshal': 10,
+        'bomb': 11,
+        'unknown': -1
+    }
+
 
     def __init__(self, ally_color=RED):
         self._ally_color = ally_color
@@ -253,39 +299,86 @@ class JunQiEnv(gym.Env):
 
         # Prepare game state variables
         reward = 0.0
+        victory_reward_given = False
 
         if self._turn == ALLY:
             pieces = self._ally_piece
             possible_actions = self._ally_actions
-            jiang_history = self._ally_jiang_history
+            # jiang_history = self._ally_jiang_history
         else:
             pieces = self._enemy_piece
             possible_actions = self.enemy_actions
-            jiang_history = self._enemy_jiang_history
+            # jiang_history = self._enemy_jiang_history
 
         # Check for illegal move, flying general, etc. and penalize the agent
         if possible_actions[action] == 0:
             return np.array(self._state), ILLEGAL_MOVE, False, {}
 
-        # Check if opponent is in Jiang condition before processing given move
-        pre_jiang_actions = self.check_jiang()
-
-        # Move the piece if legal move is given
         piece, start, end = action_space_to_move(action)
-        pieces[piece].move(*end)
+        attacker_id = piece
+        defender_id = self._state[end[0]][end[1]] * -self._turn  # always as positive
 
-        # Update observation space
+        combat_result = None
+        if defender_id != 0:
+            combat_result = self.resolve_combat(abs(attacker_id), abs(defender_id))
+
+        if combat_result == 'attacker_dies':
+            self._state[start[0]][start[1]] = EMPTY
+            if self._turn == ALLY:
+                self._ally_piece[attacker_id].state = DEAD
+            else:
+                self._enemy_piece[attacker_id].state = DEAD
+            self._turn *= -1
+            self.get_possible_actions(self._turn)
+            self._state_hash = hash(str(self._state))
+            reward -= 0.5* PIECE_POINTS[abs(attacker_id)]  
+            # the reward policy need further consideration
+            print(reward)
+            return np.array(self._state), 0, self._done, {}
+
+        # Regular move or attacker wins
         self._state[start[0]][start[1]] = EMPTY
         rm_piece_id = self._state[end[0]][end[1]]
         self._state[end[0]][end[1]] = piece * self._turn
+        pieces[piece].move(*end)
 
+        # Update enemy or ally piece states
         if rm_piece_id < 0:
             self._enemy_piece[-rm_piece_id].state = DEAD
         elif rm_piece_id > 0:
             self._ally_piece[rm_piece_id].state = DEAD
 
-        # Reward based on removed piece
-        reward += PIECE_POINTS[abs(rm_piece_id)]
+        # Reward if enemy captured
+        if combat_result == 'attacker_wins':
+            reward += PIECE_POINTS[abs(rm_piece_id)]
+        elif combat_result == 'both_die':
+            if rm_piece_id < 0:
+                self._enemy_piece[-rm_piece_id].state = DEAD
+            elif rm_piece_id > 0:
+                self._ally_piece[rm_piece_id].state = DEAD
+            if self._turn == ALLY:
+                self._ally_piece[attacker_id].state = DEAD
+            else:
+                self._enemy_piece[attacker_id].state = DEAD
+            self._state[end[0]][end[1]] = EMPTY
+            attacker_pts = PIECE_POINTS[abs(attacker_id)]
+            defender_pts = PIECE_POINTS[abs(rm_piece_id)]
+            reward += defender_pts - attacker_pts
+            # the reward policy need further consideration
+
+        # Win condition 1: enemy flag is captured
+        if abs(rm_piece_id) == 1:
+            self._done = True   # Optional: strong bonus (1000) for winning with flag
+            print(reward)
+            return np.array(self._state), reward, self._done, {}
+
+        # Win condition 2: all opponent pieces dead
+        enemy_pieces = self._enemy_piece if self._turn == ALLY else self._ally_piece
+        if all(p is None or not p.is_alive() for p in enemy_pieces[1:]):
+            self._done = True
+            # reward += 1000， the reward policy need further consideration
+            print(reward)
+            return np.array(self._state), reward, self._done, {}
 
         # # Check if the removed piece is a soldier that has crossed the river
         # if SOLDIER_1 <= abs(rm_piece_id) <= SOLDIER_5:
@@ -297,29 +390,29 @@ class JunQiEnv(gym.Env):
         #             reward += 1
 
         # End game if the General on either side has been attacked
-        if abs(rm_piece_id) == GENERAL:
-            self._done = True
+        # if abs(rm_piece_id) == GENERAL:
+        #     self._done = True
 
         # Check for perpetual check/jiang
-        post_jiang_actions = self.check_jiang()
+        # post_jiang_actions = self.check_jiang()
 
-        if post_jiang_actions:
-            for jiang_action in post_jiang_actions:
-                if jiang_action in pre_jiang_actions:
-                    continue
+        # if post_jiang_actions:
+        #     for jiang_action in post_jiang_actions:
+        #         if jiang_action in pre_jiang_actions:
+        #             continue
 
-                if jiang_action not in jiang_history:
-                    jiang_history[jiang_action] = 0
-                jiang_history[jiang_action] += 1
+        #         if jiang_action not in jiang_history:
+        #             jiang_history[jiang_action] = 0
+        #         jiang_history[jiang_action] += 1
 
                 # if jiang_history[jiang_action] == MAX_PERPETUAL_JIANG:
                 #     self._done = True
                 #     return np.array(self._state), LOSE, self._done, {}
-        else:       # Reset history if jiang spree has stopped
-            if self._turn == ALLY:
-                self._ally_jiang_history = {}
-            else:
-                self._enemy_jiang_history = {}
+        # else:       # Reset history if jiang spree has stopped
+        #     if self._turn == ALLY:
+        #         self._ally_jiang_history = {}
+        #     else:
+        #         self._enemy_jiang_history = {}
 
         # Self-play: agent switches turn between ally and enemy side
         self._turn *= -1     # ALLY (1) to ENEMY (-1) and vice versa
@@ -327,6 +420,7 @@ class JunQiEnv(gym.Env):
 
         # Update state hash.
         self._state_hash = hash(str(self._state))
+        print(reward)
 
         return np.array(self._state), reward, self._done, {}
 
@@ -507,34 +601,64 @@ class JunQiEnv(gym.Env):
             action_space_to_move(action)[1:] for action in legal_actions
         ]
 
-    def check_jiang(self):
+    def resolve_combat(self, attacker_id, defender_id):
         """
-        Check if the general is in threat (i.e. it is check or "jiang")
-        by any of current player's pieces
+        Given two piece IDs (attacker and defender), determine the result of combat.
+        Returns:
+            outcome (str): 'attacker_wins', 'defender_wins', 'both_die', or 'invalid'
+        """
+        attacker_type = self.PIECE_TYPE.get(attacker_id, 'unknown')
+        target_type = self.PIECE_TYPE.get(defender_id, 'unknown')
+        print(" attacker_type",attacker_type," target_type",target_type)
 
-        Return:
-            list:
-            list of actions that lead to Jiang based on current board state
-        """
-        # Get OPPONENT General
-        if self._turn == ALLY:
-            general = self._enemy_piece[GENERAL]
-            actions = self._ally_actions
+        if target_type == 'flag':
+            return 'attacker_wins'
+
+        if target_type == 'landmine':
+            return 'attacker_wins' if attacker_type == 'engineer' else 'attacker_dies'
+
+        if attacker_type == 'bomb' or target_type == 'bomb':
+            return 'both_die'
+
+        if attacker_type == target_type:
+            return 'both_die'
+
+        if attacker_type not in self.PIECE_RANK or target_type not in self.PIECE_RANK:
+            return 'invalid'
+
+        if self.PIECE_RANK[attacker_type] > self.PIECE_RANK[target_type]:
+            return 'attacker_wins'
         else:
-            general = self._ally_piece[GENERAL]
-            actions = self._enemy_actions
+            return 'attacker_dies'
 
-        # Update current player's moves
-        self.get_possible_actions(self._turn)
+    # def check_jiang(self):
+    #     """
+    #     Check if the general is in threat (i.e. it is check or "jiang")
+    #     by any of current player's pieces
 
-        # Iterate through possible moves of current player's pieces
-        actions = np.where(actions == 1)[0]
-        jiang_actions = []
-        for action in actions:
-            _, _, (target_r, target_c) = action_space_to_move(action)
-            if target_r == general.row and target_c == general.col:
-                jiang_actions.append(action)
-        return jiang_actions
+    #     Return:
+    #         list:
+    #         list of actions that lead to Jiang based on current board state
+    #     """
+    #     # Get OPPONENT General
+    #     if self._turn == ALLY:
+    #         general = self._enemy_piece[GENERAL]
+    #         actions = self._ally_actions
+    #     else:
+    #         general = self._ally_piece[GENERAL]
+    #         actions = self._enemy_actions
+
+    #     # Update current player's moves
+    #     self.get_possible_actions(self._turn)
+
+    #     # Iterate through possible moves of current player's pieces
+    #     actions = np.where(actions == 1)[0]
+    #     jiang_actions = []
+    #     for action in actions:
+    #         _, _, (target_r, target_c) = action_space_to_move(action)
+    #         if target_r == general.row and target_c == general.col:
+    #             jiang_actions.append(action)
+    #     return jiang_actions
 
     @property
     def ally_color(self):

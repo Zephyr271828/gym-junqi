@@ -10,6 +10,10 @@ from gym_junqi.constants import (
     BOARD_ROWS, BOARD_COLS,                             # board specs
     # PALACE_ALLY_ROW, PALACE_ENEMY_ROW, PALACE_COL,      # palace bound
     # RIVER_LOW, RIVER_HIGH,                              # river bound
+    HEADQUARTERS_ALLY_1D,                               # HEADQUARTERS coordinates 
+    HEADQUARTERS_ENEMY_1D,                              
+    CAMP_ALLY_1D,                                       # CAMP coordinates
+    CAMP_ENEMY_1D,
     MAX_REP,                                            # repetition bound
     BLACK, ALIVE, ALLY, ENEMY,                          # piece states
     # board coordinate
@@ -188,7 +192,7 @@ def check_action(piece_id, orig_pos, cur_pos,
 
         # NOTE if ally piece is located, can't go further
         if state[r][c] * sign > 0:
-            break
+            return i
             
         start_idx = convert2idx(r-offset[0], c-offset[1])
         end_idx = convert2idx(r, c)
@@ -196,19 +200,22 @@ def check_action(piece_id, orig_pos, cur_pos,
         or (BOARD_EDGES[start_idx][end_idx] == 1 and i >= 1):
             return i
         
-        # TODO need to check if in the base camp here
-        # if ...
+        # check if in the HEADQUARTERS here can not move from HEADQUARTERS
+        if start_idx in HEADQUARTERS_ALLY_1D or start_idx in HEADQUARTERS_ENEMY_1D:
+            return i
+        #如果是CAMPSITE coordinates  如果里面不为空就不能进入，
+        if end_idx in CAMP_ALLY_1D + CAMP_ENEMY_1D and state[r][c] != EMPTY:
+            return i
         
-        action_idx = move_to_action_space(piece_id, orig_pos, (r, c))
-        actions[action_idx] = 1
+        # 如果是 空地或者敌人，available，NOTE need to check the level of pieces here
+        if state[r][c] * sign <= 0:
+            action_idx = move_to_action_space(piece_id, orig_pos, (r, c))
+            actions[action_idx] = 1
 
-        # NOTE need to check the level of pieces here
-        if state[r][c] * sign < 0:
-            pass
+            # 如果是敌人，只能贴脸进入判断不能继续往前走
+            if state[r][c] * sign < 0:
+                break 
 
-        if state[r][c] != 0:
-            break
-        
         if BOARD_EDGES[start_idx][end_idx] == 1:
             break
 
