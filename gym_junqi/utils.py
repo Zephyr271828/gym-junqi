@@ -1,5 +1,35 @@
 from gym_junqi.constants import TOTAL_POS, BOARD_COLS
 
+from gym_junqi.constants import (
+# Piece IDs
+    EMPTY,
+    FLAG ,
+    FIELD_MARSHAL ,
+    GENERAL, 
+    MAJOR_GENERAL_1, 
+    MAJOR_GENERAL_2, 
+    BRIGADIER_1 ,
+    BRIGADIER_2 ,
+    COLONEL_1 ,
+    COLONEL_2,
+    ENGINEER_1 ,
+    ENGINEER_2 ,
+    ENGINEER_3 ,
+    LANDMINE_1 ,
+    LANDMINE_2 ,
+    LANDMINE_3 ,
+    MAJOR_1 ,
+    MAJOR_2 ,
+    CAPTAIN_1 ,
+    CAPTAIN_2 ,
+    CAPTAIN_3 ,
+    LIEUTENANT_1,
+    LIEUTENANT_2,
+    LIEUTENANT_3,
+    BOMB_1,
+    BOMB_2 ,
+    UNKNOWN ,
+)
 
 def move_to_action_space(piece_id, start, end):
     """
@@ -52,3 +82,5 @@ def is_ally(piece_id):
         False: given piece ID is either an empty space or an enemy piece
     """
     return piece_id > 0
+
+

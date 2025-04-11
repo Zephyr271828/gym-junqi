@@ -613,12 +613,12 @@ class JunQiEnv(gym.Env):
 
         if target_type == 'flag':
             return 'attacker_wins'
+        
+        if attacker_type == 'bomb' or target_type == 'bomb':
+            return 'both_die'
 
         if target_type == 'landmine':
             return 'attacker_wins' if attacker_type == 'engineer' else 'attacker_dies'
-
-        if attacker_type == 'bomb' or target_type == 'bomb':
-            return 'both_die'
 
         if attacker_type == target_type:
             return 'both_die'
