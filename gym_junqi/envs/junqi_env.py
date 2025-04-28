@@ -540,6 +540,7 @@ class JunQiEnv(gym.Env):
                 if piece_id < 0:
                     self._enemy_piece[-piece_id] = init(self._enemy_color,
                                                         r, c)
+                    self._enemy_piece[-piece_id].hidden = True
                 elif piece_id > 0:
                     self._ally_piece[piece_id] = init(self._ally_color, r, c)
 

@@ -20,7 +20,7 @@ from gym_junqi.constants import (
     COOR_X_DELTA, COOR_Y_DELTA, COOR_X_OFFSET, COOR_Y_OFFSET,
     PIECE_WIDTH, PIECE_HEIGHT,                          # piece sizes
     MINI_PIECE_WIDTH, MINI_PIECE_HEIGHT,                # mini piece sizes
-    PATH_TO_BLACK, PATH_TO_RED,                         # file paths to pieces
+    PATH_TO_BLACK, PATH_TO_RED, PATH_TO_UNKNOWN,        # file paths to pieces
     EMPTY, GENERAL,                                     # piece IDs
     BOARD_Y_OFFSET,                                     # board y offset
     BOARD_EDGES,                                        # type of the edges
@@ -58,6 +58,7 @@ class Piece:
         self.select_image = None
         self.mini_image = None
         self.move_sound = None
+        self.hidden = False
 
     def move(self, new_row, new_col):
         """
@@ -80,6 +81,15 @@ class Piece:
         return (x, y)
 
     def load_image(self, filename: str, piece_width, piece_height):
+        if self.hidden:
+            file_path = PATH_TO_UNKNOWN
+            target_file = os.path.join(file_path, 'unknown.png')
+            image = pygame.image.load(target_file).convert_alpha()
+            image = pygame.transform.scale(
+                image, (piece_width, piece_height)
+            )
+            return image
+        
         if self.color == BLACK:
             file_path = PATH_TO_BLACK
         else:

@@ -11,6 +11,7 @@ PATH_TO_SOUNDS = "sounds/"
 PATH_TO_BOARD = "images_junqi/board/"
 PATH_TO_BLACK = "images_junqi/black_pieces/"
 PATH_TO_RED = "images_junqi/red_pieces/"
+PATH_TO_UNKNOWN = "images_junqi/unknown_pieces/"
 
 """ PYGAME """
 # TODO: Change it
