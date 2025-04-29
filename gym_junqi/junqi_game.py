@@ -210,7 +210,7 @@ class JunQiGame:
                     show_flag = False
 
                     for piece in self.enemy_piece[1:]:
-                        if piece.name == "field_marshal":
+                        if piece.name == "field_marshal" and not piece.is_alive():
                             show_flag = True
 
                     for piece in self.enemy_piece[1:]:
