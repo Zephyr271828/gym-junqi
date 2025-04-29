@@ -24,12 +24,7 @@ from gym_junqi.constants import (
     EMPTY, GENERAL,                                     # piece IDs
     BOARD_Y_OFFSET,                                     # board y offset
     BOARD_EDGES,                                        # type of the edges
-<<<<<<< HEAD
     convert2idx,                                        # function that convertes 2D coordinates to 1D idx
-=======
-    # function that convertes 2D coordinates to 1D idx
-    convert2idx,
->>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
 )
 
 
