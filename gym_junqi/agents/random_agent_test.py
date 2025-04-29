@@ -21,7 +21,7 @@ def legal_env(mocker):
     Create an environment where the game is
     still ongoing and there are possible actions.
     """
-    env = gym.make('gym_xiangqi:junqi-v0')
+    env = gym.make('gym_junqi:junqi-v0')
     env.ally_actions.fill(0)
     # id: 2 (ADVISOR_1), start: [9, 3], end: [8, 4]
     env.ally_actions[15736] = 1

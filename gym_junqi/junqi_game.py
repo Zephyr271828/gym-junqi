@@ -47,6 +47,10 @@ class JunQiGame:
         self.bgm_switch = True
         self.quit = False
         self.compart_color = (200, 200, 200)
+<<<<<<< HEAD
+=======
+        self.hide = True
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
 
     def on_init(self):
         """
@@ -65,7 +69,11 @@ class JunQiGame:
 
         # set caption
         self.screen = pygame.display.set_mode(self.dim)
+<<<<<<< HEAD
         pygame.display.set_caption("AI Junqi(Chinese Military Chess)")
+=======
+        pygame.display.set_caption("AI Xiangqi(Chinese Chess)")
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
 
         # init board
         self.board_background = self.init_board()
@@ -198,7 +206,32 @@ class JunQiGame:
                 # get clicked coordinate
                 clicked_x, clicked_y = pygame.mouse.get_pos()
                 clicked_coor = (clicked_x, clicked_y)
+<<<<<<< HEAD
                 # print(f"Clicked at: {clicked_coor}")
+=======
+
+                # Check if Hide button was clicked
+                if hasattr(self, 'hide_button_rect') and self.hide_button_rect.collidepoint(clicked_coor):
+                    print("Hide button clicked")
+                    # Leave a placeholder for future functionality
+
+                    self.hide = not self.hide
+
+                    show_flag = False
+
+                    for piece in self.enemy_piece[1:]:
+                        if piece.name == "field_marshal" and not piece.is_alive():
+                            show_flag = True
+
+                    for piece in self.enemy_piece[1:]:
+                        if show_flag and piece.name == "flag":
+                            piece.hidden = False
+                        else:
+                            piece.hidden = self.hide
+                        piece.set_basic_image()
+
+                    return
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
 
                 # select any ally pieces that is in the clicked range
                 self.find_target_piece(clicked_coor)
@@ -267,6 +300,11 @@ class JunQiGame:
         self.update_pos_next_moves()
         self.render_kills()
 
+<<<<<<< HEAD
+=======
+        self.draw_hide_button()
+
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
         # draw all on screen
         pygame.display.update()
 
@@ -516,3 +554,20 @@ class JunQiGame:
         self.screen.blit(game_over_text, t_rect)
         pygame.display.update()
         time.sleep(3)
+<<<<<<< HEAD
+=======
+
+    def draw_hide_button(self):
+        """
+        Draw a 'Hide' button at the top-left corner of the screen.
+        """
+        button_font = pygame.font.SysFont('cochin', 24)
+        if self.hide:
+            button_text = button_font.render('Show', True, (255, 255, 255))
+        else:
+            button_text = button_font.render('Hide', True, (255, 255, 255))
+        button_rect = pygame.Rect(110, 430, 75, 40)
+        pygame.draw.rect(self.screen, (100, 100, 250), button_rect)
+        self.screen.blit(button_text, (button_rect.x + 10, button_rect.y + 5))
+        self.hide_button_rect = button_rect  # Save for click detection
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1

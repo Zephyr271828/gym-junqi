@@ -1,9 +1,8 @@
 import time
 import os
-import sys
 current_dir = os.path.dirname(os.path.abspath(__file__))
-proj_dir = os.path.join(current_dir, '..', '..', '..')
-sys.path.append(proj_dir)
+proj_dir = os.path.join(current_dir, '..', '..')
+import sys; sys.path.append(proj_dir)
 from gym_junqi.agents import RandomAgent
 from gym_junqi.constants import (     # NOQA
     RED, BLACK, PIECE_ID_TO_NAME, ALLY

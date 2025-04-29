@@ -24,13 +24,22 @@ from gym_junqi.constants import (
     EMPTY, GENERAL,                                     # piece IDs
     BOARD_Y_OFFSET,                                     # board y offset
     BOARD_EDGES,                                        # type of the edges
+<<<<<<< HEAD
     convert2idx,                                        # function that convertes 2D coordinates to 1D idx
+=======
+    # function that convertes 2D coordinates to 1D idx
+    convert2idx,
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
 )
 
 
 class Piece:
     """
+<<<<<<< HEAD
     A base class for all Junqi pieces
+=======
+    A base class for all Xiangqi pieces
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
 
     All pieces have the following:
 
@@ -89,7 +98,11 @@ class Piece:
                 image, (piece_width, piece_height)
             )
             return image
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
         if self.color == BLACK:
             file_path = PATH_TO_BLACK
         else:
@@ -203,6 +216,7 @@ def check_action(piece_id, orig_pos, cur_pos,
         # NOTE if ally piece is located, can't go further
         if state[r][c] * sign > 0:
             return i
+<<<<<<< HEAD
             
         start_idx = convert2idx(r-offset[0], c-offset[1])
         end_idx = convert2idx(r, c)
@@ -217,6 +231,22 @@ def check_action(piece_id, orig_pos, cur_pos,
         if end_idx in CAMP_ALLY_1D + CAMP_ENEMY_1D and state[r][c] != EMPTY:
             return i
         
+=======
+
+        start_idx = convert2idx(r-offset[0], c-offset[1])
+        end_idx = convert2idx(r, c)
+        if BOARD_EDGES[start_idx][end_idx] == 0 \
+                or (BOARD_EDGES[start_idx][end_idx] == 1 and i >= 1):
+            return i
+
+        # check if in the HEADQUARTERS here can not move from HEADQUARTERS
+        if start_idx in HEADQUARTERS_ALLY_1D or start_idx in HEADQUARTERS_ENEMY_1D:
+            return i
+        # 如果是CAMPSITE coordinates  如果里面不为空就不能进入，
+        if end_idx in CAMP_ALLY_1D + CAMP_ENEMY_1D and state[r][c] != EMPTY:
+            return i
+
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
         # 如果是 空地或者敌人，available，NOTE need to check the level of pieces here
         if state[r][c] * sign <= 0:
             action_idx = move_to_action_space(piece_id, orig_pos, (r, c))
@@ -224,7 +254,11 @@ def check_action(piece_id, orig_pos, cur_pos,
 
             # 如果是敌人，只能贴脸进入判断不能继续往前走
             if state[r][c] * sign < 0:
+<<<<<<< HEAD
                 break 
+=======
+                break
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
 
         if BOARD_EDGES[start_idx][end_idx] == 1:
             break
@@ -264,7 +298,11 @@ class Field_Marshal(Piece):
         Finds legal moves for the Field Marshal
         """
         for offset in ORTHOGONAL:
+<<<<<<< HEAD
             next_pos = (self.row + offset[0], self.col + offset[1])            
+=======
+            next_pos = (self.row + offset[0], self.col + offset[1])
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
             check_action(piece_id, (self.row, self.col), next_pos,
                          MAX_REP, offset, 0, state, actions)
         for offset in DIAGONAL:
@@ -286,7 +324,11 @@ class General(Piece):
         Finds legal moves for the General
         """
         for offset in ORTHOGONAL:
+<<<<<<< HEAD
             next_pos = (self.row + offset[0], self.col + offset[1])            
+=======
+            next_pos = (self.row + offset[0], self.col + offset[1])
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
             check_action(piece_id, (self.row, self.col), next_pos,
                          MAX_REP, offset, 0, state, actions)
         for offset in DIAGONAL:
@@ -308,7 +350,11 @@ class Major_General(Piece):
         Finds legal moves for the Major General
         """
         for offset in ORTHOGONAL:
+<<<<<<< HEAD
             next_pos = (self.row + offset[0], self.col + offset[1])            
+=======
+            next_pos = (self.row + offset[0], self.col + offset[1])
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
             check_action(piece_id, (self.row, self.col), next_pos,
                          MAX_REP, offset, 0, state, actions)
         for offset in DIAGONAL:
@@ -330,7 +376,11 @@ class Brigadier_General(Piece):
         Finds legal moves for the Brigadier
         """
         for offset in ORTHOGONAL:
+<<<<<<< HEAD
             next_pos = (self.row + offset[0], self.col + offset[1])            
+=======
+            next_pos = (self.row + offset[0], self.col + offset[1])
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
             check_action(piece_id, (self.row, self.col), next_pos,
                          MAX_REP, offset, 0, state, actions)
         for offset in DIAGONAL:
@@ -352,7 +402,11 @@ class Colonel(Piece):
         Finds legal moves for the Colonel
         """
         for offset in ORTHOGONAL:
+<<<<<<< HEAD
             next_pos = (self.row + offset[0], self.col + offset[1])            
+=======
+            next_pos = (self.row + offset[0], self.col + offset[1])
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
             check_action(piece_id, (self.row, self.col), next_pos,
                          MAX_REP, offset, 0, state, actions)
         for offset in DIAGONAL:
@@ -385,7 +439,11 @@ class Engineer(Piece):
                 continue
             visited[u_idx] = 1
             for offset in ORTHOGONAL:
+<<<<<<< HEAD
                 v = (u[0] + offset[0], u[1] + offset[1])   
+=======
+                v = (u[0] + offset[0], u[1] + offset[1])
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
                 v_idx = convert2idx(v)
                 if v_idx == -1:
                     continue
@@ -393,7 +451,11 @@ class Engineer(Piece):
                 if on_trail and BOARD_EDGES[u_idx][v_idx] < 2:
                     continue
                 i = check_action(piece_id, orig_pos, v,
+<<<<<<< HEAD
                     1, offset, 0, state, actions)
+=======
+                                 1, offset, 0, state, actions)
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
                 # NOTE if next position on trail, append it
                 if i > 0 and BOARD_EDGES[u_idx][v_idx] == 2 and state[v[0]][v[1]] == 0:
                     vertices2visit.append(v)
@@ -440,7 +502,11 @@ class Major(Piece):
         #     check_action(piece_id, (self.row, self.col), next_pos,
         #                  MAX_REP, offset, 0, state, actions)
         for offset in ORTHOGONAL:
+<<<<<<< HEAD
             next_pos = (self.row + offset[0], self.col + offset[1])            
+=======
+            next_pos = (self.row + offset[0], self.col + offset[1])
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
             check_action(piece_id, (self.row, self.col), next_pos,
                          MAX_REP, offset, 0, state, actions)
         for offset in DIAGONAL:
@@ -448,6 +514,10 @@ class Major(Piece):
             check_action(piece_id, (self.row, self.col), next_pos,
                          1, offset, 0, state, actions)
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
 class Captain(Piece):
     """
     """
@@ -466,7 +536,11 @@ class Captain(Piece):
         #     check_action(piece_id, (self.row, self.col), next_pos,
         #                  MAX_REP, offset, 0, state, actions)
         for offset in ORTHOGONAL:
+<<<<<<< HEAD
             next_pos = (self.row + offset[0], self.col + offset[1])            
+=======
+            next_pos = (self.row + offset[0], self.col + offset[1])
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
             check_action(piece_id, (self.row, self.col), next_pos,
                          MAX_REP, offset, 0, state, actions)
         for offset in DIAGONAL:
@@ -493,7 +567,11 @@ class Lieutenant(Piece):
         #     check_action(piece_id, (self.row, self.col), next_pos,
         #                  MAX_REP, offset, 0, state, actions)
         for offset in ORTHOGONAL:
+<<<<<<< HEAD
             next_pos = (self.row + offset[0], self.col + offset[1])            
+=======
+            next_pos = (self.row + offset[0], self.col + offset[1])
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
             check_action(piece_id, (self.row, self.col), next_pos,
                          MAX_REP, offset, 0, state, actions)
         for offset in DIAGONAL:
@@ -514,13 +592,22 @@ class Bomb(Piece):
         """
         Finds legal moves for the Bomb
         """
+<<<<<<< HEAD
         
         for offset in ORTHOGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])            
+=======
+
+        for offset in ORTHOGONAL:
+            next_pos = (self.row + offset[0], self.col + offset[1])
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
             check_action(piece_id, (self.row, self.col), next_pos,
                          MAX_REP, offset, 0, state, actions)
         for offset in DIAGONAL:
             next_pos = (self.row + offset[0], self.col + offset[1])
             check_action(piece_id, (self.row, self.col), next_pos,
                          1, offset, 0, state, actions)
+<<<<<<< HEAD
         
+=======
+>>>>>>> 693ec261bb012458b360dbc63f5c981ee51b0bd1
