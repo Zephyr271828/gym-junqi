@@ -48,6 +48,7 @@ class JunQiGame:
         self.quit = False
         self.compart_color = (200, 200, 200)
         self.hide = True
+        self.clock = 0
 
     def on_init(self):
         """
@@ -206,20 +207,7 @@ class JunQiGame:
                     # Leave a placeholder for future functionality
 
                     self.hide = not self.hide
-
-                    show_flag = False
-
-                    for piece in self.enemy_piece[1:]:
-                        if piece.name == "field_marshal" and not piece.is_alive():
-                            show_flag = True
-
-                    for piece in self.enemy_piece[1:]:
-                        if show_flag and piece.name == "flag":
-                            piece.hidden = False
-                        else:
-                            piece.hidden = self.hide
-                        piece.set_basic_image()
-
+                    self.update_flag_visibility()
                     return
 
                 # select any ally pieces that is in the clicked range
@@ -246,6 +234,8 @@ class JunQiGame:
 
                         # reset piece selection and end my turn
                         self.cur_selected = None
+                        # Update flag visibility after move
+                        self.update_flag_visibility()
                         self.running = False
         """
         # timer decrement every second
@@ -320,9 +310,27 @@ class JunQiGame:
 
         while self.running:
             clock.tick(FPS)
+            self.clock += 1
             for event in pygame.event.get():
                 self.on_event(event)
+            if self.clock % FPS == 0:
+                self.update_flag_visibility()
             self.render()
+
+    def update_flag_visibility(self):
+        """
+        Update visibility of flag piece: reveal if field marshal dead, otherwise follow hide switch.
+        """
+        show_flag = any(
+            piece.name == "field_marshal" and not piece.is_alive()
+            for piece in self.enemy_piece[1:]
+        )
+        for piece in self.enemy_piece[1:]:
+            if show_flag and piece.name == "flag":
+                piece.hidden = False
+            else:
+                piece.hidden = self.hide
+            piece.set_basic_image()
 
     def draw_background(self):
         """
